@@ -8,6 +8,9 @@
 
 /* Begin PBXFileReference section */
 		847CFA5030A4174800DE8900 /* Slotty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Slotty.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		847CFA6E30A4564500DE8900 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Config/Debug.xcconfig; sourceTree = "<group>"; };
+		847CFA7030A4565B00DE8900 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Config/Release.xcconfig; sourceTree = "<group>"; };
+		847CFA7E30A4594E00DE8900 /* Slotty-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Slotty-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +35,9 @@
 		847CFA4730A4174800DE8900 = {
 			isa = PBXGroup;
 			children = (
+				847CFA7E30A4594E00DE8900 /* Slotty-Info.plist */,
+				847CFA7030A4565B00DE8900 /* Release.xcconfig */,
+				847CFA6E30A4564500DE8900 /* Debug.xcconfig */,
 				847CFA5230A4174800DE8900 /* Slotty_ios */,
 				847CFA5130A4174800DE8900 /* Products */,
 			);
@@ -246,6 +252,7 @@
 		};
 		847CFA5C30A4174900DE8900 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 847CFA6E30A4564500DE8900 /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -253,6 +260,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Slotty-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Slotty;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -278,6 +286,7 @@
 		};
 		847CFA5D30A4174900DE8900 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 847CFA7030A4565B00DE8900 /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -285,6 +294,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Slotty-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Slotty;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

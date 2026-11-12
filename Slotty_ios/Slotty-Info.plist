@@ -4,5 +4,11 @@
 <dict>
 	<key>API_BASE_URL</key>
 	<string>$(API_BASE_URL)</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>NotoSansKR-Regular.ttf</string>
+		<string>NotoSansKR-Medium.ttf</string>
+		<string>NotoSansKR-Bold.ttf</string>
+	</array>
 </dict>
 </plist>

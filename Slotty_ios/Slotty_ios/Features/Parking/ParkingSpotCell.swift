@@ -19,8 +19,8 @@ struct ParkingSpotCell: View {
             if let caption {
                 Text(caption)
                     .font(SlottyFont.caption2)
+            }
         }
-    }
         .foregroundStyle(foregroundColor)
         .frame(maxWidth: .infinity, minHeight: 64)
         .background(backgroundColor, in: RoundedRectangle(cornerRadius: 4))
@@ -30,13 +30,14 @@ struct ParkingSpotCell: View {
         }
     }
     
+    /// 번호 아래 작은 글자 - 없으면 nil
     private var caption: String? {
         switch spot.status {
         case .occupied, .visiting, .unconfirmed, .needsCheck:
             spot.status.label
         case .available:
             "가용"
-        case.empty:
+        case .empty:
             spot.isShared ? "공용" : nil
         }
     }

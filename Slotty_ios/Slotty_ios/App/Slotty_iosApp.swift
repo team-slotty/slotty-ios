@@ -11,7 +11,7 @@ import SwiftUI
 struct Slotty_iosApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView(parkingViewModel: ParkingHomeViewModel(repository: MockParkingRepository()))
+            MainTabView(parkingViewModel: ParkingHomeViewModel(repository: LiveParkingRepository()))
         }
     }
 }

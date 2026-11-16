@@ -31,4 +31,14 @@ final class ParkingHomeViewModel {
             errorMessage = "연결이 불안정해요"
         }
     }
+    
+    /// 출차 - 성공하면 현황판을 바뀐 상태로 교체
+    func exit(spotNumber: Int) async {
+        do {
+            board = try await repository.exit(spotNumber: spotNumber)
+            errorMessage = nil
+        } catch {
+            errorMessage = "출차하지 못했어요"
+        }
+    }
 }

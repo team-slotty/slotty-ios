@@ -11,6 +11,8 @@ import SwiftUI
 
 struct ParkingHomeView: View {
     @State private var viewModel: ParkingHomeViewModel
+    /// 상세 시트로 보고 있는 면, 시트가 닫혀 있으면 nil
+    @State private var selectedSpot: ParkingSpot?
 
     init(viewModel: ParkingHomeViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -37,12 +39,29 @@ struct ParkingHomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 header(board)
+                myVehicles(board)
                 boardCard(board)
                 legend
             }
             .padding(20)
         }
         .background(SlottyColor.background)
+        .sheet(item: $selectedSpot) { spot in
+            ParkingSpotDetailSheet(
+                spot: spot,
+                canExit: canExit(at: spot, in: board),
+                onExit: {
+                    selectedSpot = nil
+                    Task { await viewModel.exit(spotNumber: spot.number) }
+                }
+            )
+            .presentationDetents([.medium])
+        }
+    }
+
+    /// 이 면에 우리 세대 차가 서 있는지
+    private func canExit(at spot: ParkingSpot, in board: ParkingBoard) -> Bool {
+        board.myVehicles.contains { board.spot(parkedBy: $0)?.number == spot.number }
     }
 
     /// 빌라 이름과 내 세대 호수
@@ -55,6 +74,24 @@ struct ParkingHomeView: View {
             Text("\(board.myUnit)호")
                 .font(SlottyFont.body)
                 .foregroundStyle(SlottyColor.secondary)
+        }
+    }
+    
+    /// 우리 세대 차 카드 목록
+    private func myVehicles(_ board: ParkingBoard) -> some View {
+        VStack(spacing: 12) {
+            ForEach(board.myVehicles) { vehicle in
+                let parkedSpot = board.spot(parkedBy: vehicle)
+                MyVehicleCard(
+                    vehicle: vehicle,
+                    parkedSpot: parkedSpot,
+                    onEnter: {},
+                    onExit: {
+                        guard let parkedSpot else { return }
+                        Task { await viewModel.exit(spotNumber: parkedSpot.number) }
+                    }
+                )
+            }
         }
     }
 
@@ -87,7 +124,12 @@ struct ParkingHomeView: View {
     private func spotRow(_ spots: [ParkingSpot], myUnit: String) -> some View {
         HStack(spacing: 8) {
             ForEach(spots) { spot in
-                ParkingSpotCell(spot: spot, isMine: spot.isAssigned(to: myUnit))
+                Button {
+                    selectedSpot = spot
+                } label: {
+                    ParkingSpotCell(spot: spot, isMine: spot.isAssigned(to: myUnit))
+                }
+                .buttonStyle(.plain)
             }
         }
     }

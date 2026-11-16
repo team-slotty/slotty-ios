@@ -15,4 +15,9 @@ struct ParkingRecord: Equatable {
     var enteredAt: Date
     /// 기록 방식
     var method: ParkingRecordMethod
+    
+    /// 이웃에게 보여줄 가린 번호 (예: **가 3456), 번호 모르면 nil
+    var maskedPlateNumber: String? {
+        plateNumber.map { "**" + $0.suffix(5) }
+    }
 }

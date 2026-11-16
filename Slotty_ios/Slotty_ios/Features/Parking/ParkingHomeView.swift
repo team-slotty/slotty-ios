@@ -37,6 +37,7 @@ struct ParkingHomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 header(board)
+                myVehicles(board)
                 boardCard(board)
                 legend
             }
@@ -55,6 +56,16 @@ struct ParkingHomeView: View {
             Text("\(board.myUnit)호")
                 .font(SlottyFont.body)
                 .foregroundStyle(SlottyColor.secondary)
+        }
+    }
+    
+    /// 우리 세대 차 카드 목록
+    private func myVehicles(_ board: ParkingBoard) -> some View {
+        VStack(spacing: 12) {
+            ForEach(board.myVehicles) { vehicle in
+                MyVehicleCard(vehicle: vehicle, parkedSpot: board.spot(parkedBy: vehicle), onEnter: {}, onExit: {}
+                )
+            }
         }
     }
 

@@ -20,7 +20,6 @@ extension BoardResponse {
 }
 
 extension BoardResponse.Slot {
-    
     /// 앱의 주차면으로 변환
     func toSpot() -> ParkingSpot {
         ParkingSpot(
@@ -41,10 +40,9 @@ extension BoardResponse.Slot {
         case "VISITING": .visiting
         case "UNIDENTIFIED": .unconfirmed
         case "NEEDS_CHECK": .needsCheck
-        case "AVAILABLE": .empty
+        case "AVAILABLE": .available
+        case "EMPTY": .empty
         default: .needsCheck // 앱이 아직 모르는 상태는 확인 필요로 표시
         }
     }
 }
-
-

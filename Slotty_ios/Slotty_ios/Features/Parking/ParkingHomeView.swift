@@ -50,7 +50,10 @@ struct ParkingHomeView: View {
             ParkingSpotDetailSheet(
                 spot: spot,
                 canExit: canExit(at: spot, in: board),
-                onExit: {}
+                onExit: {
+                    selectedSpot = nil
+                    Task { await viewModel.exit(spotNumber: spot.number) }
+                }
             )
             .presentationDetents([.medium])
         }

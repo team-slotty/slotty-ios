@@ -14,6 +14,8 @@ struct ParkingSpotDetailSheet: View {
     let canExit: Bool
     let onExit: () -> Void
     
+    @State private var isConfirmingExit = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
@@ -29,16 +31,19 @@ struct ParkingSpotDetailSheet: View {
                 infoRow("배정 세대", spot.assignedUnit.map { "\($0)호" } ?? "공용")
                 if let record = spot.currentParking {
                     infoRow("차량번호", record.maskedPlateNumber ?? "알 수 없음")
-                    infoRow("입차 시각", record.enteredAt.formatted(date:.omitted, time:.shortened))
+                    infoRow("입차 시각", record.enteredAt.formatted(date: .omitted, time: .shortened))
                     infoRow("기록 방식", record.method.label)
                 }
             }
             if canExit {
-                Button("출차", action: onExit)
+                Button("출차") {
+                    isConfirmingExit = true
+                }
                     .buttonStyle(.slottyPrimary)
             }
         }
         .padding(20)
+        .exitConfirmation("\(spot.number)번 면에서 출차할까요?", isPresented: $isConfirmingExit, onConfirm: onExit)
     }
     
     /// 왼쪽 항목 이름, 오른쪽 값 한 줄

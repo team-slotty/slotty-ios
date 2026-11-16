@@ -84,7 +84,7 @@ struct ParkingHomeView: View {
                 let parkedSpot = board.spot(parkedBy: vehicle)
                 MyVehicleCard(
                     vehicle: vehicle,
-                    parkedSpot: board.spot(parkedBy: vehicle),
+                    parkedSpot: parkedSpot,
                     onEnter: {},
                     onExit: {
                         guard let parkedSpot else { return }

@@ -40,7 +40,6 @@ struct MyVehicleCard: View {
                 }
                 .buttonStyle(.slottySecondary)
                 .disabled(parkedSpot == nil)
-
             }
         }
         .padding(16)

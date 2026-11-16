@@ -38,6 +38,7 @@ struct ParkingHomeView: View {
             VStack(alignment: .leading, spacing: 16) {
                 header(board)
                 boardCard(board)
+                legend
             }
             .padding(20)
         }
@@ -87,6 +88,32 @@ struct ParkingHomeView: View {
         HStack(spacing: 8) {
             ForEach(spots) { spot in
                 ParkingSpotCell(spot: spot, isMine: spot.isAssigned(to: myUnit))
+            }
+        }
+    }
+    
+    /// 상태 범례
+    private var legend: some View {
+        let labels = [
+            ParkingSpotStatus.occupied.label,
+            ParkingSpotStatus.empty.label,
+            ParkingSpotStatus.available.label,
+            ParkingSpotStatus.visiting.label,
+            ParkingSpotStatus.unconfirmed.label,
+            "공용",
+            ParkingSpotStatus.needsCheck.label,
+        ]
+        return FlowLayout {
+            ForEach(labels, id: \.self) { label in
+                Text(label)
+                    .font(SlottyFont.caption)
+                    .foregroundStyle(SlottyColor.primary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .overlay {
+                        Capsule()
+                            .strokeBorder(SlottyColor.line)
+                    }
             }
         }
     }

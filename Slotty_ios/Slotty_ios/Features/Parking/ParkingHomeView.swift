@@ -81,7 +81,16 @@ struct ParkingHomeView: View {
     private func myVehicles(_ board: ParkingBoard) -> some View {
         VStack(spacing: 12) {
             ForEach(board.myVehicles) { vehicle in
-                MyVehicleCard(vehicle: vehicle, parkedSpot: board.spot(parkedBy: vehicle), onEnter: {}, onExit: {})
+                let parkedSpot = board.spot(parkedBy: vehicle)
+                MyVehicleCard(
+                    vehicle: vehicle,
+                    parkedSpot: board.spot(parkedBy: vehicle),
+                    onEnter: {},
+                    onExit: {
+                        guard let parkedSpot else { return }
+                        Task { await viewModel.exit(spotNumber: parkedSpot.number) }
+                    }
+                )
             }
         }
     }

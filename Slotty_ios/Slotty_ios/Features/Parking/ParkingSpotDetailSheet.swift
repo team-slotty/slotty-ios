@@ -39,7 +39,7 @@ struct ParkingSpotDetailSheet: View {
                 Button("출차") {
                     isConfirmingExit = true
                 }
-                    .buttonStyle(.slottyPrimary)
+                .buttonStyle(.slottyPrimary)
             }
         }
         .padding(20)

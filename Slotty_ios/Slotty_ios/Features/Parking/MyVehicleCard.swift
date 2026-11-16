@@ -14,6 +14,8 @@ struct MyVehicleCard: View {
     let onEnter: () -> Void
     let onExit: () -> Void
     
+    @State private var isConfirmingExit = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
@@ -33,9 +35,12 @@ struct MyVehicleCard: View {
                 Button("입차", action: onEnter)
                     .buttonStyle(.slottyPrimary)
                     .disabled(parkedSpot != nil)
-                Button("출차", action: onExit)
-                    .buttonStyle(.slottySecondary)
-                    .disabled(parkedSpot == nil)
+                Button("출차") {
+                    isConfirmingExit = true
+                }
+                .buttonStyle(.slottySecondary)
+                .disabled(parkedSpot == nil)
+
             }
         }
         .padding(16)
@@ -44,6 +49,7 @@ struct MyVehicleCard: View {
             RoundedRectangle(cornerRadius: 12)
                 .strokeBorder(SlottyColor.line)
         }
+        .exitConfirmation("\(vehicle.plateNumber) 출차할까요?", isPresented: $isConfirmingExit, onConfirm: onExit)
     }
     
     /// 예: "2번 면, 사용 중, 오후 7:12 입차 / 주차 안 함"

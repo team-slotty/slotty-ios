@@ -20,7 +20,7 @@ struct ParkingBoard: Equatable {
     
     /// 이 차가 서 있는 면, 주차 안 했으면 nil
     func spot(parkedBy vehicle: Vehicle) -> ParkingSpot? {
-        spots.first{ $0.currentParking?.plateNumber == vehicle.plateNumber
+        spots.first { $0.currentParking?.plateNumber == vehicle.plateNumber
         }
     }
 }

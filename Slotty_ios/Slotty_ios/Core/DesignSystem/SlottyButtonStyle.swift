@@ -8,11 +8,11 @@
 import SwiftUI
 
 /// 기본 버튼 : 진한 배경 + 흰 글자
-struct SlottyPrimaryButtonStyle: ButtonStyle { /// 버튼 모양만 정의하는 틀, 눌렀을 때 하는 일은 Button이 따로 정한다
+struct SlottyPrimaryButtonStyle: ButtonStyle { // 버튼 모양만 정의하는 틀, 눌렀을 때 하는 일은 Button이 따로 정한다
     @Environment(\.isEnabled) private var isEnabled
     
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label /// 버튼 안의 글자
+        configuration.label // 버튼 안의 글자
             .font(SlottyFont.button)
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity, minHeight: 46)
@@ -54,7 +54,7 @@ extension ButtonStyle where Self == SlottySecondaryButtonStyle {
             .buttonStyle(.slottyPrimary)
         Button("출차") {}
             .buttonStyle(.slottySecondary)
-        Button("입차( (비활성)") {}
+        Button("입차 (비활성)") {}
             .buttonStyle(.slottyPrimary)
             .disabled(true)
         Button("출차 (비활성)") {}

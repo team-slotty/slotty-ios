@@ -63,8 +63,7 @@ struct ParkingHomeView: View {
     private func myVehicles(_ board: ParkingBoard) -> some View {
         VStack(spacing: 12) {
             ForEach(board.myVehicles) { vehicle in
-                MyVehicleCard(vehicle: vehicle, parkedSpot: board.spot(parkedBy: vehicle), onEnter: {}, onExit: {}
-                )
+                MyVehicleCard(vehicle: vehicle, parkedSpot: board.spot(parkedBy: vehicle), onEnter: {}, onExit: {})
             }
         }
     }

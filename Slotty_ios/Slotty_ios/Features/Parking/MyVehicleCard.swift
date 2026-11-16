@@ -32,6 +32,7 @@ struct MyVehicleCard: View {
             HStack(spacing: 8) {
                 Button("입차", action: onEnter)
                     .buttonStyle(.slottyPrimary)
+                    .disabled(parkedSpot != nil)
                 Button("출차", action: onExit)
                     .buttonStyle(.slottySecondary)
                     .disabled(parkedSpot == nil)
@@ -48,7 +49,7 @@ struct MyVehicleCard: View {
     /// 예: "2번 면, 사용 중, 오후 7:12 입차 / 주차 안 함"
     private var statusText: String {
         guard let parkedSpot else { return "주차 안 함" }
-        var text = "\(parkedSpot.number)번 면 |  \(parkedSpot.status.label)"
+        var text = "\(parkedSpot.number)번 면 | \(parkedSpot.status.label)"
         if let enteredAt = parkedSpot.currentParking?.enteredAt {
             text += " | \(enteredAt.formatted(date: .omitted, time: .shortened)) 입차"
         }

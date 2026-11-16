@@ -31,7 +31,7 @@ struct APIClient {
     }
     
     /// 서버 날짜 해석
-    nonisolated private static func decodeServerDate(_ decoder: Decoder) throws -> Date {
+    nonisolated static func decodeServerDate(_ decoder: Decoder) throws -> Date {
         let container = try decoder.singleValueContainer()
         let text = try container.decode(String.self)
         let formatter = DateFormatter()

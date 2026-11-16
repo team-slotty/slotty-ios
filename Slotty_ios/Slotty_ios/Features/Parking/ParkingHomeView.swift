@@ -11,6 +11,8 @@ import SwiftUI
 
 struct ParkingHomeView: View {
     @State private var viewModel: ParkingHomeViewModel
+    /// 상세 시트로 보고 있는 면, 시트가 닫혀 있으면 nil
+    @State private var selectedSpot: ParkingSpot?
 
     init(viewModel: ParkingHomeViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -44,6 +46,19 @@ struct ParkingHomeView: View {
             .padding(20)
         }
         .background(SlottyColor.background)
+        .sheet(item: $selectedSpot) { spot in
+            ParkingSpotDetailSheet(
+                spot: spot,
+                canExit: canExit(at: spot, in: board),
+                onExit: {}
+            )
+            .presentationDetents([.medium])
+        }
+    }
+
+    /// 이 면에 우리 세대 차가 서 있는지
+    private func canExit(at spot: ParkingSpot, in board: ParkingBoard) -> Bool {
+        board.myVehicles.contains { board.spot(parkedBy: $0)?.number == spot.number }
     }
 
     /// 빌라 이름과 내 세대 호수
@@ -97,7 +112,12 @@ struct ParkingHomeView: View {
     private func spotRow(_ spots: [ParkingSpot], myUnit: String) -> some View {
         HStack(spacing: 8) {
             ForEach(spots) { spot in
-                ParkingSpotCell(spot: spot, isMine: spot.isAssigned(to: myUnit))
+                Button {
+                    selectedSpot = spot
+                } label: {
+                    ParkingSpotCell(spot: spot, isMine: spot.isAssigned(to: myUnit))
+                }
+                .buttonStyle(.plain)
             }
         }
     }

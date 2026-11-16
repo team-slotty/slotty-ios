@@ -29,13 +29,13 @@ struct MainTabView: View {
         .tint(SlottyColor.primary)
     }
     
+    /// 아직 만들지 않은 탭 - 임시 화면 생성
     private func placeholder(_ title: String) -> some View {
         Text("\(title) 준비 중")
             .font(SlottyFont.body)
             .foregroundStyle(SlottyColor.secondary)
     }
 }
-
 
 #Preview {
     MainTabView(parkingViewModel: ParkingHomeViewModel(repository: MockParkingRepository()))

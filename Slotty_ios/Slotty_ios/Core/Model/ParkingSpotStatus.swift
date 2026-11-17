@@ -41,4 +41,11 @@ enum ParkingSpotStatus: Equatable {
         case .available, .empty: false
         }
     }
+    /// 미확인 차량으로 기록할 수 있는 상태인지 - 앱에는 비어 있거나 확인이 필요한 면
+    var canRecordUnconfirmed: Bool {
+        switch self {
+        case .empty, .available, .needsCheck: true
+        case .occupied, .visiting, .unconfirmed: false
+        }
+    }
 }

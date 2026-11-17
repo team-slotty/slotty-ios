@@ -51,4 +51,14 @@ final class ParkingHomeViewModel {
             errorMessage = "입차하지 못했어요"
         }
     }
+    
+    /// 미확인 차량 기록 - 성공하면 현황판을 바뀐 상태로 교체
+    func recordUnidentified(spotNumber: Int) async {
+        do {
+            board = try await repository.recordUnidentified(spotNumber: spotNumber)
+            errorMessage = nil
+        } catch {
+            errorMessage = "기록하지 못했어요"
+        }
+    }
 }

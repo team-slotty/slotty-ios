@@ -16,5 +16,7 @@ protocol ParkingRepository {
     ParkingBoard
     /// 출차: 해당 면을 비우고, 바뀐 현황판을 돌려준다
     func exit(spotNumber: Int) async throws -> ParkingBoard
+    /// 미확인 차량 기록: 누구 차인지 모르는 차가 서 있다고 기록하고, 바뀐 현황판을 돌려준다
+    func recordUnidentified(spotNumber: Int) async throws -> ParkingBoard
 }
 

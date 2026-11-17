@@ -38,4 +38,9 @@ struct LiveParkingRepository: ParkingRepository {
         // 서버에 미확인 기록 API가 아직 없음
         throw ParkingError.notSupported
     }
+    
+    func markAsMine(spotNumber: Int, vehicle: Vehicle) async throws -> ParkingBoard {
+        // 서버에 바로잡기 API가 아직 없음
+        throw ParkingError.notSupported
+    }
 }

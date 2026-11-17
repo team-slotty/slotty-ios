@@ -15,6 +15,8 @@ enum ParkingError: Error, Equatable {
     case spotOccupied
     /// 이 차량은 이미 다른 면에 주차 중
     case vehicleAlreadyParked
+    /// 미확인 차량이 기록된 면이 아님
+    case notUnconfirmed
     /// 서버에 아직 없는 기능
     case notSupported
 }

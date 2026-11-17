@@ -13,6 +13,9 @@ struct ParkingSpotDetailSheet: View {
     /// 우리 세대 차가 서 있어서 출차할 수 있는지
     let canExit: Bool
     let onExit: () -> Void
+    /// 내 면이라 미확인 차량으로 기록할 수 있는지
+    let canRecordUnconfirmed: Bool
+    let onRecordUnconfirmed: () -> Void
     
     @State private var isConfirmingExit = false
     
@@ -41,6 +44,15 @@ struct ParkingSpotDetailSheet: View {
                 }
                 .buttonStyle(.slottyPrimary)
             }
+            if canRecordUnconfirmed {
+                VStack(alignment: .leading, spacing: 8) {
+                    Button("미확인 차량으로 기록", action: onRecordUnconfirmed)
+                        .buttonStyle(.slottySecondary)
+                    Text("※ 등록되지 않은 차가 서 있으면 면 주인이 기록할 수 있어요")
+                        .font(SlottyFont.caption)
+                        .foregroundStyle(SlottyColor.secondary)
+                }
+            }
         }
         .padding(20)
         .exitConfirmation("\(spot.number)번 면에서 출차할까요?", isPresented: $isConfirmingExit, onConfirm: onExit)
@@ -62,7 +74,13 @@ struct ParkingSpotDetailSheet: View {
 #Preview {
     Color.clear
         .sheet(isPresented: .constant(true)) {
-            ParkingSpotDetailSheet(spot: MockParkingData.board.spots[1], canExit: true, onExit: {})
-                .presentationDetents([.medium])
+            ParkingSpotDetailSheet(
+                spot: MockParkingData.board.spots[1],
+                canExit: true,
+                onExit: {},
+                canRecordUnconfirmed: true,
+                onRecordUnconfirmed: {}
+            )
+            .presentationDetents([.medium])
         }
 }

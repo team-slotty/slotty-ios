@@ -58,6 +58,11 @@ struct ParkingHomeView: View {
                 onExit: {
                     selectedSpot = nil
                     Task { await viewModel.exit(spotNumber: spot.number) }
+                },
+                canRecordUnconfirmed: canRecordUnconfirmed(at: spot, in: board),
+                onRecordUnconfirmed: {
+                    selectedSpot = nil
+                    Task { await viewModel.recordUnidentified(spotNumber: spot.number)}
                 }
             )
             .presentationDetents([.medium])
@@ -74,6 +79,11 @@ struct ParkingHomeView: View {
     /// 이 면에 우리 세대 차가 서 있는지
     private func canExit(at spot: ParkingSpot, in board: ParkingBoard) -> Bool {
         board.myVehicles.contains { board.spot(parkedBy: $0)?.number == spot.number }
+    }
+    
+    /// 내 배정 면이고, 미확인 차량으로 기록할 수 있는 상태인지
+    private func canRecordUnconfirmed(at spot: ParkingSpot, in board: ParkingBoard) -> Bool {
+        spot.isAssigned(to: board.myUnit) && spot.status.canRecordUnconfirmed
     }
     
     /// 빌라 이름과 내 세대 호수

@@ -26,8 +26,8 @@ final class MockParkingRepository: ParkingRepository {
             throw ParkingError.spotOccupied
         }
         guard board.spot(parkedBy: vehicle) == nil else {
-                    throw ParkingError.vehicleAlreadyParked
-                }
+            throw ParkingError.vehicleAlreadyParked
+        }
         board.spots[index].status = .occupied
         board.spots[index].currentParking = ParkingRecord(
             plateNumber: vehicle.plateNumber,

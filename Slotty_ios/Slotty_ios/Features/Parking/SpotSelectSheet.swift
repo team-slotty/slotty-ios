@@ -10,7 +10,7 @@ import SwiftUI
 /// [변경] - 입차할 주차면 고르기 (사용 중인 면은 선택 불가)
 struct SpotSelectSheet: View {
     let board: ParkingBoard
-    /// 지금 골라져 잇는 면 번호, 없으면 nil
+    /// 지금 골라져 있는 면 번호, 없으면 nil
     let selectedNumber: Int?
     let onSelect: (Int) -> Void
     
@@ -26,7 +26,7 @@ struct SpotSelectSheet: View {
                             onSelect(spot.number)
                         } label: {
                             SelectableRow(title: "\(spot.number)번",
-                                          subtitle: "\(owner(of: spot))  \(spot.status.label)",
+                                          subtitle: "\(owner(of: spot)) · \(spot.status.label)",
                                           isSelected: spot.number == selectedNumber
                             )
                         }

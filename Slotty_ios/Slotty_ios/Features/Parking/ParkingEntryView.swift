@@ -16,6 +16,7 @@ struct ParkingEntryView: View {
     /// 고른 주차면 번호, 고를 수 있는 면이 없으면 nil
     @State private var spotNumber: Int?
     @State private var isSelectingVehicle = false
+    @State private var isSelectingSpot = false
     
     init(board: ParkingBoard, vehicle: Vehicle, onEnter: @escaping (Vehicle, Int) -> Void) {
         self.board = board
@@ -31,7 +32,9 @@ struct ParkingEntryView: View {
             selectionRow(title: "차량", value: vehicle.plateNumber, actionTitle: "다른 차량") {
                 isSelectingVehicle = true
             }
-            selectionRow(title: "주차면", value: spotNumber.map { "\($0)번" } ?? "선택 안 됨", actionTitle: "변경") {}
+            selectionRow(title: "주차면", value: spotNumber.map { "\($0)번" } ?? "선택 안 됨", actionTitle: "변경") {
+                isSelectingSpot = true
+            }
             if spotNumber == nil, let mySpot {
                 Text("배정 면(\(mySpot.number)번)이 사용 중이에요. 다른 면을 선택해 주세요.")
                     .font(SlottyFont.caption)
@@ -48,10 +51,16 @@ struct ParkingEntryView: View {
         }
         .padding(20)
         .sheet(isPresented: $isSelectingVehicle) {
-            VehicleSelectSheet(board: board, selected: vehicle) {
-                selected in
+            VehicleSelectSheet(board: board, selected: vehicle) { selected in
                 vehicle = selected
                 isSelectingVehicle = false
+            }
+            .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $isSelectingSpot) {
+            SpotSelectSheet(board: board, selectedNumber: spotNumber) { selected in
+                spotNumber = selected
+                isSelectingSpot = false
             }
             .presentationDetents([.medium])
         }

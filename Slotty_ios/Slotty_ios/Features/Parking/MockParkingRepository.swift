@@ -25,9 +25,7 @@ final class MockParkingRepository: ParkingRepository {
         guard !board.spots[index].status.isOccupied else {
             throw ParkingError.spotOccupied
         }
-        let isAlreadyParked = board.spots.contains {
-            $0.currentParking?.plateNumber == vehicle.plateNumber }
-        guard !isAlreadyParked else {
+        guard board.spot(parkedBy: vehicle) == nil else {
             throw ParkingError.vehicleAlreadyParked
         }
         board.spots[index].status = .occupied

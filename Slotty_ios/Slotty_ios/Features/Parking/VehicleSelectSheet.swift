@@ -24,7 +24,8 @@ struct VehicleSelectSheet: View {
                 Button {
                     onSelect(vehicle)
                 } label: {
-                    row(vehicle, parkedSpot: parkedSpot)
+                    SelectableRow(title: vehicle.plateNumber, subtitle: parkedSpot.map { "\($0.number)번 면에 주차 중" } ?? vehicle.nickname ?? "주차 안 함", isSelected: vehicle == selected
+                    )
                 }
                 .buttonStyle(.plain)
                 .disabled(parkedSpot != nil)
@@ -32,30 +33,6 @@ struct VehicleSelectSheet: View {
             Spacer()
         }
         .padding(20)
-    }
-    
-    /// 차 한 대 - 이미 주차 중이면 흐리게
-    private func row(_ vehicle: Vehicle, parkedSpot: ParkingSpot?) -> some View {
-        let isSelected = vehicle == selected
-        return HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(vehicle.plateNumber)
-                    .font(SlottyFont.headline)
-                Text(parkedSpot.map { "\($0.number)번 면에 주차 중" } ?? vehicle.nickname ?? "주차 안 함")
-                    .font(SlottyFont.caption)
-            }
-            Spacer()
-            if isSelected {
-                Image(systemName: "checkmark")
-            }
-        }
-        .foregroundStyle(parkedSpot == nil ? SlottyColor.primary : SlottyColor.secondary)
-        .padding(16)
-        .contentShape(Rectangle())
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(isSelected ? SlottyColor.primary : SlottyColor.line, lineWidth: isSelected ? 2 : 1)
-        }
     }
 }
 

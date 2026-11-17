@@ -13,11 +13,13 @@ struct ParkingHomeView: View {
     @State private var viewModel: ParkingHomeViewModel
     /// 상세 시트로 보고 있는 면, 시트가 닫혀 있으면 nil
     @State private var selectedSpot: ParkingSpot?
-
+    /// 입차 화면을 연 차량, 닫혀 있으면 nil
+    @State private var enteringVehicle: Vehicle?
+    
     init(viewModel: ParkingHomeViewModel) {
         _viewModel = State(initialValue: viewModel)
     }
-
+    
     var body: some View {
         Group {
             if let board = viewModel.board {
@@ -34,7 +36,7 @@ struct ParkingHomeView: View {
             await viewModel.load()
         }
     }
-
+    
     private func content(_ board: ParkingBoard) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -57,13 +59,17 @@ struct ParkingHomeView: View {
             )
             .presentationDetents([.medium])
         }
+        .sheet(item: $enteringVehicle) { vehicle in
+            ParkingEntryView(board: board, vehicle: vehicle) { _, _ in }
+                .presentationDetents([.medium])
+        }
     }
-
+    
     /// 이 면에 우리 세대 차가 서 있는지
     private func canExit(at spot: ParkingSpot, in board: ParkingBoard) -> Bool {
         board.myVehicles.contains { board.spot(parkedBy: $0)?.number == spot.number }
     }
-
+    
     /// 빌라 이름과 내 세대 호수
     private func header(_ board: ParkingBoard) -> some View {
         HStack {
@@ -85,7 +91,7 @@ struct ParkingHomeView: View {
                 MyVehicleCard(
                     vehicle: vehicle,
                     parkedSpot: parkedSpot,
-                    onEnter: {},
+                    onEnter: { enteringVehicle = vehicle },
                     onExit: {
                         guard let parkedSpot else { return }
                         Task { await viewModel.exit(spotNumber: parkedSpot.number) }
@@ -94,14 +100,14 @@ struct ParkingHomeView: View {
             }
         }
     }
-
+    
     /// 주차면 그리드 카드
     private func boardCard(_ board: ParkingBoard) -> some View {
         let mySpotNumber = board.spots.first { $0.isAssigned(to: board.myUnit) }?.number
         let half = (board.spots.count + 1) / 2
         let topRow = Array(board.spots.prefix(half))
         let bottomRow = Array(board.spots.dropFirst(half))
-
+        
         return VStack(alignment: .leading, spacing: 8) {
             Text(mySpotNumber.map { "주차 현황 (\($0)번 = 내 면)" } ?? "주차 현황")
                 .font(SlottyFont.caption)
@@ -119,7 +125,7 @@ struct ParkingHomeView: View {
                 .strokeBorder(SlottyColor.line)
         }
     }
-
+    
     /// 주차면 한 줄
     private func spotRow(_ spots: [ParkingSpot], myUnit: String) -> some View {
         HStack(spacing: 8) {

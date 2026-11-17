@@ -16,8 +16,12 @@ struct ParkingSpotDetailSheet: View {
     /// 내 면이라 미확인 차량으로 기록할 수 있는지
     let canRecordUnconfirmed: Bool
     let onRecordUnconfirmed: () -> Void
+    /// 내 면의 미확인 차량이 떠났다고 알릴 수 있는지
+    let canMarkLeft: Bool
+    let onMarkLeft: () -> Void
     
     @State private var isConfirmingExit = false
+    @State private var isConfirmingLeft = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -53,9 +57,16 @@ struct ParkingSpotDetailSheet: View {
                         .foregroundStyle(SlottyColor.secondary)
                 }
             }
+            if canMarkLeft {
+                Button("차량 떠남") {
+                    isConfirmingLeft = true
+                }
+                .buttonStyle(.slottySecondary)
+            }
         }
         .padding(20)
         .exitConfirmation("\(spot.number)번 면에서 출차할까요?", isPresented: $isConfirmingExit, onConfirm: onExit)
+        .exitConfirmation("\(spot.number)번 면의 차가 떠났나요?", isPresented: $isConfirmingLeft, onConfirm: onMarkLeft)
     }
     
     /// 왼쪽 항목 이름, 오른쪽 값 한 줄
@@ -79,7 +90,9 @@ struct ParkingSpotDetailSheet: View {
                 canExit: true,
                 onExit: {},
                 canRecordUnconfirmed: true,
-                onRecordUnconfirmed: {}
+                onRecordUnconfirmed: {},
+                canMarkLeft: true,
+                onMarkLeft: {}
             )
             .presentationDetents([.medium])
         }

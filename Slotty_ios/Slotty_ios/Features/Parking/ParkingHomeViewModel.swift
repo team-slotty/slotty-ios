@@ -41,4 +41,14 @@ final class ParkingHomeViewModel {
             errorMessage = "출차하지 못했어요"
         }
     }
+    
+    /// 입차 - 성공하면 현황판을 바뀐 상태로 교체
+    func enter(vehicle: Vehicle, spotNumber: Int) async {
+        do {
+            board = try await repository.enter(vehicle: vehicle, spotNumber: spotNumber)
+            errorMessage = nil
+        } catch {
+            errorMessage = "입차하지 못했어요"
+        }
+    }
 }

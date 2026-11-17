@@ -60,8 +60,11 @@ struct ParkingHomeView: View {
             .presentationDetents([.medium])
         }
         .sheet(item: $enteringVehicle) { vehicle in
-            ParkingEntryView(board: board, vehicle: vehicle) { _, _ in }
-                .presentationDetents([.medium])
+            ParkingEntryView(board: board, vehicle: vehicle) { vehicle, spotNumber in
+                enteringVehicle = nil
+                Task { await viewModel.enter(vehicle: vehicle, spotNumber: spotNumber) }
+            }
+            .presentationDetents([.medium])
         }
     }
     

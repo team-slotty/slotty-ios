@@ -46,4 +46,21 @@ final class MockParkingRepository: ParkingRepository {
         board.spots[index].currentParking = nil
         return board
     }
+    
+    func recordUnidentified(spotNumber: Int) async throws ->
+    ParkingBoard {
+        guard let index = board.spots.firstIndex(where: { $0.number == spotNumber }) else {
+            throw ParkingError.spotNotFound
+        }
+        guard board.spots[index].status.canRecordUnconfirmed else {
+            throw ParkingError.spotOccupied
+        }
+        board.spots[index].status = .unconfirmed
+        board.spots[index].currentParking = ParkingRecord(
+            plateNumber: nil,
+            enteredAt: Date(),
+            method: .manual
+        )
+        return board
+    }
 }

@@ -33,4 +33,9 @@ struct LiveParkingRepository: ParkingRepository {
         // 서버에 출차 API가 아직 없음
         throw ParkingError.notSupported
     }
+    
+    func recordUnidentified(spotNumber: Int) async throws -> ParkingBoard {
+        // 서버에 미확인 기록 API가 아직 없음
+        throw ParkingError.notSupported
+    }
 }

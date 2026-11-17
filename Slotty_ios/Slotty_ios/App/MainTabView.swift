@@ -10,11 +10,14 @@ import SwiftUI
 /// 메인 화면 하단 탭
 struct MainTabView: View {
     let parkingViewModel: ParkingHomeViewModel
+    let searchRepository: any VehicleSearchRepository
     
     var body: some View {
         TabView {
             Tab("홈", systemImage: "house") {
-                ParkingHomeView(viewModel: parkingViewModel)
+                NavigationStack {
+                    ParkingHomeView(viewModel: parkingViewModel, searchRepository: searchRepository)
+                }
             }
             Tab("방문차량", systemImage: "car.2") {
                 placeholder("방문차량")
@@ -38,5 +41,8 @@ struct MainTabView: View {
 }
 
 #Preview {
-    MainTabView(parkingViewModel: ParkingHomeViewModel(repository: MockParkingRepository()))
+    MainTabView(
+        parkingViewModel: ParkingHomeViewModel(repository: MockParkingRepository()),
+        searchRepository: MockVehicleSearchRepository()
+    )
 }

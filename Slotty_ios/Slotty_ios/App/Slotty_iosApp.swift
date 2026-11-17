@@ -11,7 +11,10 @@ import SwiftUI
 struct Slotty_iosApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView(parkingViewModel: ParkingHomeViewModel(repository: Self.parkingRepository))
+            MainTabView(
+                parkingViewModel: ParkingHomeViewModel(repository: Self.parkingRepository),
+                searchRepository: Self.vehicleSearchRepository
+            )
         }
     }
     
@@ -23,5 +26,9 @@ struct Slotty_iosApp: App {
         }
 #endif
         return LiveParkingRepository()
+    }
+    /// 서버에 검색 API가 생기기 전까지는 항상 목 저장소
+    private static var vehicleSearchRepository: any VehicleSearchRepository {
+        MockVehicleSearchRepository()
     }
 }

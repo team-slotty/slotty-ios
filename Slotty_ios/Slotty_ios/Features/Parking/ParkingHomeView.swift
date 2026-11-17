@@ -15,9 +15,12 @@ struct ParkingHomeView: View {
     @State private var selectedSpot: ParkingSpot?
     /// 입차 화면을 연 차량, 닫혀 있으면 nil
     @State private var enteringVehicle: Vehicle?
+    /// 차량 검색 화면에 넘겨줄 저장소
+    private let searchRepository: any VehicleSearchRepository
     
-    init(viewModel: ParkingHomeViewModel) {
+    init(viewModel: ParkingHomeViewModel, searchRepository: any VehicleSearchRepository) {
         _viewModel = State(initialValue: viewModel)
+        self.searchRepository = searchRepository
     }
     
     var body: some View {
@@ -83,6 +86,14 @@ struct ParkingHomeView: View {
             Text("\(board.myUnit)호")
                 .font(SlottyFont.body)
                 .foregroundStyle(SlottyColor.secondary)
+            NavigationLink {
+                VehicleSearchView(viewModel: VehicleSearchViewModel(repository: searchRepository))
+            } label: {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 18))
+                    .foregroundStyle(SlottyColor.primary)
+            }
+            .accessibilityLabel("차량 검색")
         }
     }
     
@@ -171,5 +182,10 @@ struct ParkingHomeView: View {
 }
 
 #Preview {
-    ParkingHomeView(viewModel: ParkingHomeViewModel(repository: MockParkingRepository()))
+    NavigationStack {
+        ParkingHomeView(
+            viewModel: ParkingHomeViewModel(repository: MockParkingRepository()),
+            searchRepository: MockVehicleSearchRepository()
+        )
+    }
 }

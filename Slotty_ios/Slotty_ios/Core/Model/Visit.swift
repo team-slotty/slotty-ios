@@ -12,7 +12,7 @@ struct Visit: Identifiable, Equatable {
     let id: String
     /// 방문 차량번호 (우리 세대 방문이라 가리지 않음)
     var plateNumber: String
-    /// 방문 시작·종료 일시
+    /// 방문 시작/종료 일시
     var startAt: Date
     var endAt: Date
     /// 지정한 주차면 번호, 지정하지 않았으면 nil

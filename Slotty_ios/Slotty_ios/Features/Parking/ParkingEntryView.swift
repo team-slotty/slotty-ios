@@ -93,7 +93,7 @@ struct ParkingEntryView: View {
         board.spots.first { $0.isAssigned(to: board.myUnit) && !$0.status.isOccupied }?.number
     }
     
-    /// 항목 이름·값 + 오른쪽 변경 버튼 한 줄
+    /// 항목 이름/값 + 오른쪽 변경 버튼 한 줄
     private func selectionRow(title: String, value: String, actionTitle: String, action: @escaping () -> Void) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// 우리 세대 방문차량을 불러오고 등록·종료·삭제하는 약속
+/// 우리 세대 방문차량을 불러오고 등록/종료/삭제하는 약속
 protocol VisitRepository {
     /// 우리 세대 방문 목록
     func fetchVisits() async throws -> [Visit]

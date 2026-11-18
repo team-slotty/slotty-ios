@@ -14,7 +14,7 @@ enum SlottyFont {
         static let largeTitle = Font.custom("NotoSansKR-Bold", size: 24)
         /// 홈 상단 빌라 이름
         static let title = Font.custom("NotoSansKR-Bold", size: 20)
-        /// 카드·목록 제목, 그리드 칸 번호
+        /// 카드/목록 제목, 그리드 칸 번호
         static let headline = Font.custom("NotoSansKR-Bold", size: 16)
         /// 부제 (Figma 확정: Medium 14)
         static let subtitle = Font.custom("NotoSansKR-Medium", size: 14)

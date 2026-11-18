@@ -9,9 +9,9 @@ import Foundation
 
 /// 방문 한 건의 상태
 enum VisitStatus: Equatable {
-    /// 방문 예정 · 시작 시각 전
+    /// 방문 예정 - 시작 시각 전
     case scheduled
-    /// 방문 중 · 시작과 종료 사이
+    /// 방문 중 - 시작과 종료 사이
     case visiting
     /// 확인 필요 - 면 지정 방문이 종료 30분 후에도 정리되지 않음
     case needsCheck

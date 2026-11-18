@@ -18,5 +18,7 @@ protocol ParkingRepository {
     func exit(spotNumber: Int) async throws -> ParkingBoard
     /// 미확인 차량 기록: 누구 차인지 모르는 차가 서 있다고 기록하고, 바뀐 현황판을 돌려준다
     func recordUnidentified(spotNumber: Int) async throws -> ParkingBoard
+    /// 내 차예요: 미확인 면에 서 있는 차를 우리 세대 차로 바로잡고, 바뀐 현황판을 돌려준다
+    func markAsMine(spotNumber: Int, vehicle: Vehicle) async throws -> ParkingBoard
 }
 

@@ -63,4 +63,25 @@ final class MockParkingRepository: ParkingRepository {
         )
         return board
     }
+    
+    func markAsMine(spotNumber: Int, vehicle: Vehicle) async throws -> ParkingBoard {
+        guard let index = board.spots.firstIndex(where: { $0.number == spotNumber }) else {
+            throw ParkingError.spotNotFound
+        }
+        guard board.spots[index].status == .unconfirmed else {
+            throw ParkingError.notUnconfirmed
+        }
+        // 운행 중인 차가 없어 주차 중인 차를 고른 경우: 이전 면의 열린 기록을 자동 정리
+        if let previousIndex = board.spots.firstIndex(where: { $0.currentParking?.plateNumber == vehicle.plateNumber }) {
+            board.spots[previousIndex].status = .empty
+            board.spots[previousIndex].currentParking = nil
+        }
+        board.spots[index].status = .occupied
+        board.spots[index].currentParking = ParkingRecord(
+            plateNumber: vehicle.plateNumber,
+            enteredAt: board.spots[index].currentParking?.enteredAt ?? Date(),
+            method: .correction
+        )
+        return board
+    }
 }

@@ -61,4 +61,14 @@ final class ParkingHomeViewModel {
             errorMessage = "기록하지 못했어요"
         }
     }
+    
+    /// 내 차예요 - 성공하면 현황판을 바뀐 상태로 교체
+       func markAsMine(spotNumber: Int, vehicle: Vehicle) async {
+           do {
+               board = try await repository.markAsMine(spotNumber: spotNumber, vehicle: vehicle)
+               errorMessage = nil
+           } catch {
+               errorMessage = "바로잡지 못했어요"
+           }
+       }
 }

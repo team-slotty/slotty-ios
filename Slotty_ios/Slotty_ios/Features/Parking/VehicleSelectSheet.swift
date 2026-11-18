@@ -10,8 +10,10 @@ import SwiftUI
 /// [다른 차량] - 입차할 우리 세대 차 고르기
 struct VehicleSelectSheet: View {
     let board: ParkingBoard
-    /// 지금 골라져 있는 차
-    let selected: Vehicle
+    /// 지금 골라져 있는 차, 없으면 nil
+    let selected: Vehicle?
+    /// 주차 중인 차도 고를 수 있는지 - 운행 중인 차가 0대일 때만 true
+    var includesParked = false
     let onSelect: (Vehicle) -> Void
     
     var body: some View {
@@ -28,7 +30,7 @@ struct VehicleSelectSheet: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .disabled(parkedSpot != nil)
+                .disabled(parkedSpot != nil && !includesParked)
             }
             Spacer()
         }

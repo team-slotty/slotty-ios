@@ -92,7 +92,9 @@ struct ParkingHomeView: View {
             .presentationDetents([.medium])
         }
         .sheet(item: $enteringVehicle) { vehicle in
-            ParkingEntryView(board: board, vehicle: vehicle) { vehicle, spotNumber in
+            ParkingEntryView(board: board, vehicle: vehicle, onRecordUnconfirmed: { spotNumber in
+                Task { await viewModel.recordUnidentified(spotNumber: spotNumber) }
+            }) { vehicle, spotNumber in
                 enteringVehicle = nil
                 Task { await viewModel.enter(vehicle: vehicle, spotNumber: spotNumber) }
             }

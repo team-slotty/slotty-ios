@@ -23,7 +23,9 @@ struct MainTabView: View {
                 placeholder("방문차량")
             }
             Tab("마이", systemImage: "person") {
-                placeholder("마이")
+                NavigationStack {
+                    MyHomeView(viewModel: parkingViewModel)
+                }
             }
             Tab("관리", systemImage: "gearshape") {
                 placeholder("관리")

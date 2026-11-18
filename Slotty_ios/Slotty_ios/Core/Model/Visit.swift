@@ -47,4 +47,12 @@ struct Visit: Identifiable, Equatable {
     func canEnd(at now: Date = Date()) -> Bool {
         [.visiting, .needsCheck].contains(status(at: now))
     }
+    
+    /// 홈 "오늘 방문 예정"에 보일지 - 오늘 안에 시작하고 아직 끝나지 않은 방문
+    func isUpcomingToday(at now: Date = Date(), calendar: Calendar = .current) -> Bool {
+        guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) else {
+            return false
+        }
+        return startAt < tomorrow && status(at: now) != .ended
+    }
 }

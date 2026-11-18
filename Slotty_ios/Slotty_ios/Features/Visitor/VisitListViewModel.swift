@@ -70,6 +70,13 @@ final class VisitListViewModel {
         }
     }
     
+    /// 홈 "오늘 방문 예정" - 빠른 순
+    func todayVisits(now: Date = Date()) -> [Visit] {
+        (visits ?? [])
+            .filter { $0.isUpcomingToday(at: now) }
+            .sorted { $0.startAt < $1.startAt }
+    }
+    
     /// 구분에 맞는 방문 - 예정/방문 중은 빠른 순, 지난 방문은 최근 순
     func visits(in filter: VisitFilter, now: Date = Date()) -> [Visit] {
         let filtered = (visits ?? []).filter { filter.contains($0.status(at: now)) }

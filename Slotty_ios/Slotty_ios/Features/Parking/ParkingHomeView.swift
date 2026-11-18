@@ -15,6 +15,10 @@ struct ParkingHomeView: View {
     @State private var selectedSpot: ParkingSpot?
     /// 입차 화면을 연 차량, 닫혀 있으면 nil
     @State private var enteringVehicle: Vehicle?
+    /// [내 차예요]로 차를 고르는 중인 면, 닫혀 있으면 nil
+    @State private var correctingSpot: ParkingSpot?
+    /// 상세 시트가 닫힌 뒤 차 고르기를 열 면
+    @State private var pendingCorrectionSpot: ParkingSpot?
     /// 차량 검색 화면에 넘겨줄 저장소
     private let searchRepository: any VehicleSearchRepository
     
@@ -51,7 +55,10 @@ struct ParkingHomeView: View {
             .padding(20)
         }
         .background(SlottyColor.background)
-        .sheet(item: $selectedSpot) { spot in
+        .sheet(item: $selectedSpot, onDismiss: {
+            correctingSpot = pendingCorrectionSpot
+            pendingCorrectionSpot = nil
+        }) { spot in
             ParkingSpotDetailSheet(
                 spot: spot,
                 canExit: canExit(at: spot, in: board),
@@ -68,8 +75,20 @@ struct ParkingHomeView: View {
                 onMarkLeft: {
                     selectedSpot = nil
                     Task { await viewModel.exit(spotNumber: spot.number) }
+                },
+                canMarkAsMine: canMarkLeft(at: spot, in: board),
+                onMarkAsMine: {
+                    markAsMine(spot, in: board)
                 }
             )
+            .presentationDetents([.medium])
+        }
+        .sheet(item: $correctingSpot) { spot in
+            let drivingVehicles = drivingVehicles(in: board)
+            VehicleSelectSheet(board: board, selected: nil, includesParked: drivingVehicles.isEmpty) { vehicle in
+                correctingSpot = nil
+                Task { await viewModel.markAsMine(spotNumber: spot.number, vehicle: vehicle) }
+            }
             .presentationDetents([.medium])
         }
         .sheet(item: $enteringVehicle) { vehicle in
@@ -89,6 +108,23 @@ struct ParkingHomeView: View {
     /// 내 배정 면이고, 미확인 차량으로 기록할 수 있는 상태인지
     private func canRecordUnconfirmed(at spot: ParkingSpot, in board: ParkingBoard) -> Bool {
         spot.isAssigned(to: board.myUnit) && spot.status.canRecordUnconfirmed
+    }
+    
+    /// 주차 중이 아닌(운행 중인) 우리 세대 차
+    private func drivingVehicles(in board: ParkingBoard) -> [Vehicle] {
+        board.myVehicles.filter { board.spot(parkedBy: $0) == nil }
+    }
+    
+    /// [내 차예요] - 운행 중인 차가 1대면 바로 정정, 아니면 상세 시트를 닫은 뒤 차 고르기
+    private func markAsMine(_ spot: ParkingSpot, in board: ParkingBoard) {
+        let drivingVehicles = drivingVehicles(in: board)
+        if drivingVehicles.count == 1 {
+            selectedSpot = nil
+            Task { await viewModel.markAsMine(spotNumber: spot.number, vehicle: drivingVehicles[0]) }
+        } else {
+            pendingCorrectionSpot = spot
+            selectedSpot = nil
+        }
     }
     
     /// 내 배정 면에 미확인 차량이 기록돼 있는지

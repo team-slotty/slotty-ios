@@ -19,6 +19,9 @@ struct ParkingSpotDetailSheet: View {
     /// 내 면의 미확인 차량이 떠났다고 알릴 수 있는지
     let canMarkLeft: Bool
     let onMarkLeft: () -> Void
+    /// 내 면의 미확인 차량이 사실 우리 세대 차라고 정정할 수 있는지
+    let canMarkAsMine: Bool
+    let onMarkAsMine: () -> Void
     
     @State private var isConfirmingExit = false
     @State private var isConfirmingLeft = false
@@ -33,6 +36,11 @@ struct ParkingSpotDetailSheet: View {
                 Text(spot.status.label)
                     .font(SlottyFont.subtitle)
                     .foregroundStyle(SlottyColor.secondary)
+            }
+            if spot.status == .unconfirmed {
+                Text("등록되지 않은 차량이에요")
+                    .font(SlottyFont.body)
+                    .foregroundStyle(SlottyColor.primary)
             }
             VStack(spacing: 12) {
                 infoRow("배정 세대", spot.assignedUnit.map { "\($0)호" } ?? "공용")
@@ -52,10 +60,14 @@ struct ParkingSpotDetailSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Button("미확인 차량으로 기록", action: onRecordUnconfirmed)
                         .buttonStyle(.slottySecondary)
-                    Text("※ 등록되지 않은 차가 서 있으면 면 주인이 기록할 수 있어요")
+                    Text("※ 관리자·면 주인은 미확인 차량으로 기록할 수 있어요")
                         .font(SlottyFont.caption)
                         .foregroundStyle(SlottyColor.secondary)
                 }
+            }
+            if canMarkAsMine {
+                Button("내 차예요", action: onMarkAsMine)
+                    .buttonStyle(.slottyPrimary)
             }
             if canMarkLeft {
                 Button("차량 떠남") {
@@ -86,13 +98,15 @@ struct ParkingSpotDetailSheet: View {
     Color.clear
         .sheet(isPresented: .constant(true)) {
             ParkingSpotDetailSheet(
-                spot: MockParkingData.board.spots[1],
-                canExit: true,
+                spot: MockParkingData.board.spots[5],
+                canExit: false,
                 onExit: {},
-                canRecordUnconfirmed: true,
+                canRecordUnconfirmed: false,
                 onRecordUnconfirmed: {},
                 canMarkLeft: true,
-                onMarkLeft: {}
+                onMarkLeft: {},
+                canMarkAsMine: true,
+                onMarkAsMine: {}
             )
             .presentationDetents([.medium])
         }

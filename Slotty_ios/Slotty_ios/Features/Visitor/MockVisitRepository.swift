@@ -34,7 +34,7 @@ final class MockVisitRepository: VisitRepository {
         guard let index = visits.firstIndex(where: { $0.id == visitID }) else {
             throw VisitError.visitNotFound
         }
-        guard visits[index].status() == .visiting else {
+        guard visits[index].canEnd() else {
             throw VisitError.notVisiting
         }
         visits[index].endedAt = Date()
@@ -45,7 +45,7 @@ final class MockVisitRepository: VisitRepository {
         guard let index = visits.firstIndex(where: { $0.id == visitID }) else {
             throw VisitError.visitNotFound
         }
-        guard visits[index].status() == .scheduled else {
+        guard visits[index].canDelete() else {
             throw VisitError.alreadyStarted
         }
         visits.remove(at: index)

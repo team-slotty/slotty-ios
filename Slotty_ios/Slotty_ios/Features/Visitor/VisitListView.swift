@@ -12,6 +12,8 @@ struct VisitListView: View {
     @State private var viewModel: VisitListViewModel
     @State private var filter: VisitFilter = .scheduled
     @State private var isRegistering = false
+    /// 상세 시트로 보고 있는 방문, 닫혀 있으면 nil
+    @State private var selectedVisit: Visit?
     /// 방문 등록에서 지정할 수 있는 면 번호
     private let spotOptions: [Int]
     
@@ -47,6 +49,14 @@ struct VisitListView: View {
                 await viewModel.register(form)
             }
         }
+        .sheet(item: $selectedVisit) { visit in
+            VisitDetailView(
+                visit: visit,
+                onEnd: { await viewModel.end(visit) },
+                onDelete: { await viewModel.delete(visit) }
+            )
+            .presentationDetents([.medium])
+        }
         .task {
             await viewModel.load()
         }
@@ -72,7 +82,12 @@ struct VisitListView: View {
                 ScrollView {
                     VStack(spacing: 8) {
                         ForEach(visits) { visit in
-                            VisitRow(visit: visit)
+                            Button {
+                                selectedVisit = visit
+                            } label: {
+                                VisitRow(visit: visit)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }

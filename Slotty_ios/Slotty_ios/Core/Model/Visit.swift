@@ -37,4 +37,14 @@ struct Visit: Identifiable, Equatable {
         }
         return .ended
     }
+    
+    /// 삭제할 수 있는지 - 시작 전 방문만
+    func canDelete(at now: Date = Date()) -> Bool {
+        status(at: now) == .scheduled
+    }
+    
+    /// [방문 종료]를 누를 수 있는지 - 방문 중이거나 확인 필요
+    func canEnd(at now: Date = Date()) -> Bool {
+        [.visiting, .needsCheck].contains(status(at: now))
+    }
 }

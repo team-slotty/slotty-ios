@@ -17,12 +17,15 @@ struct LiveParkingRepository: ParkingRepository {
     
     func fetchBoard() async throws -> ParkingBoard {
         let response: BoardResponse = try await client.get("/api/board")
-        // 서버 응답에 내 세대, 내 차량이 아직 없어서 목 데이터 값을 임시로 사용
-        return response.toBoard(
-            myUnit: MockParkingData.board.myUnit,
-            myVehicles: MockParkingData.board.myVehicles
-        )
+        return response.toBoard(myUnit: Self.temporaryUnit, myVehicles: Self.temporaryVehicles)
     }
+    
+    // 서버 응답에 내 세대, 내 차량이 아직 없어서 로컬 시드의 사용자 1번(101호) 값을 임시로 사용
+    private static let temporaryUnit = "101"
+    private static let temporaryVehicles = [
+        Vehicle(id: "1", plateNumber: "12가3456", nickname: nil, unit: "101"),
+        Vehicle(id: "5", plateNumber: "90마2468", nickname: nil, unit: "101"),
+    ]
     
     func enter(vehicle: Vehicle, spotNumber: Int) async throws -> ParkingBoard {
         // 서버에 입차 API가 아직 없음

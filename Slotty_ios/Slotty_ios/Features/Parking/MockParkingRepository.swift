@@ -71,14 +71,16 @@ final class MockParkingRepository: ParkingRepository {
         guard board.spots[index].status == .unconfirmed else {
             throw ParkingError.notUnconfirmed
         }
-        guard board.spot(parkedBy: vehicle) == nil else {
-            throw ParkingError.vehicleAlreadyParked
+        // 운행 중인 차가 없어 주차 중인 차를 고른 경우: 이전 면의 열린 기록을 자동 정리
+        if let previousIndex = board.spots.firstIndex(where: { $0.currentParking?.plateNumber == vehicle.plateNumber }) {
+            board.spots[previousIndex].status = .empty
+            board.spots[previousIndex].currentParking = nil
         }
         board.spots[index].status = .occupied
         board.spots[index].currentParking = ParkingRecord(
             plateNumber: vehicle.plateNumber,
             enteredAt: board.spots[index].currentParking?.enteredAt ?? Date(),
-            method: .manual
+            method: .correction
         )
         return board
     }

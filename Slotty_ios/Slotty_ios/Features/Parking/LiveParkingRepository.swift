@@ -15,17 +15,12 @@ struct LiveParkingRepository: ParkingRepository {
         self.client = client
     }
     
+    /// 현황판과 내 차량을 차례로 불러와 합친다
     func fetchBoard() async throws -> ParkingBoard {
-        let response: BoardResponse = try await client.get("/api/board")
-        return response.toBoard(myUnit: Self.temporaryUnit, myVehicles: Self.temporaryVehicles)
+        let board: BoardResponse = try await client.get("/api/board")
+        let myVehicles: MyVehiclesResponse = try await client.get("/api/vehicles/me")
+        return board.toBoard(myUnit: myVehicles.unitNumber, myVehicles: myVehicles.toVehicles())
     }
-    
-    // 서버 응답에 내 세대, 내 차량이 아직 없어서 로컬 시드의 사용자 1번(101호) 값을 임시로 사용
-    private static let temporaryUnit = "101"
-    private static let temporaryVehicles = [
-        Vehicle(id: "1", plateNumber: "12가3456", nickname: nil, unit: "101"),
-        Vehicle(id: "5", plateNumber: "90마2468", nickname: nil, unit: "101"),
-    ]
     
     func enter(vehicle: Vehicle, spotNumber: Int) async throws -> ParkingBoard {
         // 서버에 입차 API가 아직 없음

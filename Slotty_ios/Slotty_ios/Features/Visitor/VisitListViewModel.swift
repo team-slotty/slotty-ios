@@ -31,6 +31,22 @@ final class VisitListViewModel {
             errorMessage = "방문 목록을 불러오지 못했어요"
         }
     }
+    /// 방문 등록 - 성공하면 목록에 더하고 true, 실패하면 false
+    func register(_ form: VisitForm) async -> Bool {
+        guard form.problem == nil else { return false }
+        do {
+            let visit = try await repository.register(
+                plateNumber: form.trimmedPlateNumber,
+                startAt: form.startAt,
+                endAt: form.endAt,
+                spotNumber: form.spotNumber
+            )
+            visits = (visits ?? []) + [visit]
+            return true
+        } catch {
+            return false
+        }
+    }
     
     /// 구분에 맞는 방문 - 예정/방문 중은 빠른 순, 지난 방문은 최근 순
     func visits(in filter: VisitFilter, now: Date = Date()) -> [Visit] {

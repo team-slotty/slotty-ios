@@ -10,6 +10,8 @@ import SwiftUI
 /// 입차 화면 - 차량과 주차면을 고르고 [입차하기]
 struct ParkingEntryView: View {
     let board: ParkingBoard
+    /// [내 면에 다른 차가 있어요] - 내 면 번호를 넘겨 미확인 차량으로 기록
+    let onRecordUnconfirmed: (Int) -> Void
     let onEnter: (Vehicle, Int) -> Void
     
     @State private var vehicle: Vehicle
@@ -18,8 +20,14 @@ struct ParkingEntryView: View {
     @State private var isSelectingVehicle = false
     @State private var isSelectingSpot = false
     
-    init(board: ParkingBoard, vehicle: Vehicle, onEnter: @escaping (Vehicle, Int) -> Void) {
+    init(
+        board: ParkingBoard,
+        vehicle: Vehicle,
+        onRecordUnconfirmed: @escaping (Int) -> Void,
+        onEnter: @escaping (Vehicle, Int) -> Void
+    ) {
         self.board = board
+        self.onRecordUnconfirmed = onRecordUnconfirmed
         self.onEnter = onEnter
         _vehicle = State(initialValue: vehicle)
         _spotNumber = State(initialValue: Self.defaultSpotNumber(in: board))
@@ -39,6 +47,15 @@ struct ParkingEntryView: View {
                 Text("배정 면(\(mySpot.number)번)이 사용 중이에요. 다른 면을 선택해 주세요.")
                     .font(SlottyFont.caption)
                     .foregroundStyle(SlottyColor.secondary)
+            }
+            if let mySpot, mySpot.status.canRecordUnconfirmed {
+                Button("내 면에 다른 차가 있어요") {
+                    onRecordUnconfirmed(mySpot.number)
+                    if spotNumber == mySpot.number {
+                        spotNumber = nil
+                    }
+                }
+                .buttonStyle(.slottySecondary)
             }
             Spacer()
             Button("입차하기") {
@@ -102,12 +119,12 @@ struct ParkingEntryView: View {
 
 #Preview("배정 면 사용 중") {
     let board = MockParkingData.board
-    ParkingEntryView(board: board, vehicle: board.myVehicles[1]) { _, _ in }
+    ParkingEntryView(board: board, vehicle: board.myVehicles[1], onRecordUnconfirmed: { _ in }) { _, _ in }
 }
 
 #Preview("배정 면 비어 있음") {
     var board = MockParkingData.board
     board.spots[1].status = .empty
     board.spots[1].currentParking = nil
-    return ParkingEntryView(board: board, vehicle: board.myVehicles[1]) { _, _ in }
+    return ParkingEntryView(board: board, vehicle: board.myVehicles[1], onRecordUnconfirmed: { _ in }) { _, _ in }
 }

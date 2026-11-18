@@ -22,4 +22,8 @@ struct ParkingBoard: Equatable {
     func spot(parkedBy vehicle: Vehicle) -> ParkingSpot? {
         spots.first { $0.currentParking?.plateNumber == vehicle.plateNumber }
     }
+    /// 방문 차량에 지정할 수 있는 면 - 공용 면과 가용시간 중인 면
+    var visitorSpotNumbers: [Int] {
+        spots.filter { $0.isShared || $0.status == .available }.map(\.number)
+    }
 }

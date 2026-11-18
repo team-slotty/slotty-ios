@@ -11,9 +11,13 @@ import SwiftUI
 struct VisitListView: View {
     @State private var viewModel: VisitListViewModel
     @State private var filter: VisitFilter = .scheduled
+    @State private var isRegistering = false
+    /// 방문 등록에서 지정할 수 있는 면 번호
+    private let spotOptions: [Int]
     
-    init(viewModel: VisitListViewModel) {
+    init(viewModel: VisitListViewModel, spotOptions: [Int]) {
         _viewModel = State(initialValue: viewModel)
+        self.spotOptions = spotOptions
     }
     
     var body: some View {
@@ -33,9 +37,14 @@ struct VisitListView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                // 등록 화면은 다음 이슈(#32)에서 연결
-                Button("+ 등록") {}
-                    .disabled(true)
+                Button("+ 등록") {
+                    isRegistering = true
+                }
+            }
+        }
+        .sheet(isPresented: $isRegistering) {
+            VisitFormView(spotOptions: spotOptions) { form in
+                await viewModel.register(form)
             }
         }
         .task {
@@ -74,6 +83,6 @@ struct VisitListView: View {
 
 #Preview {
     NavigationStack {
-        VisitListView(viewModel: VisitListViewModel(repository: MockVisitRepository()))
+        VisitListView(viewModel: VisitListViewModel(repository: MockVisitRepository()), spotOptions: [6, 7])
     }
 }

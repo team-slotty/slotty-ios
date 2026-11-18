@@ -22,7 +22,10 @@ struct MainTabView: View {
             }
             Tab("방문차량", systemImage: "car.2") {
                 NavigationStack {
-                    VisitListView(viewModel: VisitListViewModel(repository: visitRepository))
+                    VisitListView(
+                        viewModel: VisitListViewModel(repository: visitRepository),
+                        spotOptions: parkingViewModel.board?.visitorSpotNumbers ?? []
+                    )
                 }
             }
             Tab("마이", systemImage: "person") {

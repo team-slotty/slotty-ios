@@ -11,6 +11,7 @@ import SwiftUI
 struct MainTabView: View {
     let parkingViewModel: ParkingHomeViewModel
     let searchRepository: any VehicleSearchRepository
+    let visitRepository: any VisitRepository
     
     var body: some View {
         TabView {
@@ -20,7 +21,9 @@ struct MainTabView: View {
                 }
             }
             Tab("방문차량", systemImage: "car.2") {
-                placeholder("방문차량")
+                NavigationStack {
+                    VisitListView(viewModel: VisitListViewModel(repository: visitRepository))
+                }
             }
             Tab("마이", systemImage: "person") {
                 NavigationStack {
@@ -45,6 +48,7 @@ struct MainTabView: View {
 #Preview {
     MainTabView(
         parkingViewModel: ParkingHomeViewModel(repository: MockParkingRepository()),
-        searchRepository: MockVehicleSearchRepository()
+        searchRepository: MockVehicleSearchRepository(),
+        visitRepository: MockVisitRepository()
     )
 }

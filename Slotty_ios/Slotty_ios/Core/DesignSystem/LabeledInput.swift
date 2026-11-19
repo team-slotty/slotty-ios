@@ -14,6 +14,8 @@ struct LabeledInput: View {
     @Binding var text: String
     /// 비밀번호처럼 가려서 입력할지
     var isSecure = false
+    /// 키보드 종류 (예: 전화번호는 .phonePad)
+    var keyboard: UIKeyboardType = .default
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -28,6 +30,7 @@ struct LabeledInput: View {
                 }
             }
             .font(SlottyFont.body)
+            .keyboardType(keyboard)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .padding(.horizontal, 14)

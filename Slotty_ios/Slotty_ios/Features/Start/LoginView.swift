@@ -52,9 +52,10 @@ struct LoginView: View {
                 HStack(spacing: 8) {
                     Text("계정이 없으신가요?")
                         .foregroundStyle(SlottyColor.primary)
-                    // 회원가입 화면은 다음 이슈에서 연결 예정
-                    Button("회원가입") {}
-                        .foregroundStyle(SlottyColor.primary)
+                    NavigationLink("회원가입") {
+                        SignUpView(viewModel: viewModel.makeSignUpViewModel())
+                    }
+                    .foregroundStyle(SlottyColor.primary)
                 }
                 .font(SlottyFont.caption)
             }
@@ -86,5 +87,7 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView(viewModel: LoginViewModel(repository: MockAuthRepository())) {}
+    NavigationStack {
+        LoginView(viewModel: LoginViewModel(repository: MockAuthRepository())) {}
+    }
 }

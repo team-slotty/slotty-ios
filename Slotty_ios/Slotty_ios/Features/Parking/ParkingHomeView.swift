@@ -11,6 +11,8 @@ import SwiftUI
 
 struct ParkingHomeView: View {
     @State private var viewModel: ParkingHomeViewModel
+    /// 오늘 방문 예정 카드에 쓰는 방문 목록 - 방문차량 탭과 공유
+    @State private var visitViewModel: VisitListViewModel
     /// 상세 시트로 보고 있는 면, 시트가 닫혀 있으면 nil
     @State private var selectedSpot: ParkingSpot?
     /// 입차 화면을 연 차량, 닫혀 있으면 nil
@@ -19,11 +21,18 @@ struct ParkingHomeView: View {
     @State private var correctingSpot: ParkingSpot?
     /// 상세 시트가 닫힌 뒤 차 고르기를 열 면
     @State private var pendingCorrectionSpot: ParkingSpot?
+    /// 상세 시트로 보고 있는 방문, 닫혀 있으면 nil
+    @State private var selectedVisit: Visit?
     /// 차량 검색 화면에 넘겨줄 저장소
     private let searchRepository: any VehicleSearchRepository
     
-    init(viewModel: ParkingHomeViewModel, searchRepository: any VehicleSearchRepository) {
+    init(
+        viewModel: ParkingHomeViewModel,
+        visitViewModel: VisitListViewModel,
+        searchRepository: any VehicleSearchRepository
+    ) {
         _viewModel = State(initialValue: viewModel)
+        _visitViewModel = State(initialValue: visitViewModel)
         self.searchRepository = searchRepository
     }
     
@@ -41,6 +50,7 @@ struct ParkingHomeView: View {
         }
         .task {
             await viewModel.load()
+            await visitViewModel.load()
         }
     }
     
@@ -49,6 +59,10 @@ struct ParkingHomeView: View {
             VStack(alignment: .leading, spacing: 16) {
                 header(board)
                 myVehicles(board)
+                let todayVisits = visitViewModel.todayVisits()
+                if !todayVisits.isEmpty {
+                    TodayVisitsCard(visits: todayVisits) { selectedVisit = $0 }
+                }
                 boardCard(board)
                 legend
             }
@@ -98,6 +112,14 @@ struct ParkingHomeView: View {
                 enteringVehicle = nil
                 Task { await viewModel.enter(vehicle: vehicle, spotNumber: spotNumber) }
             }
+            .presentationDetents([.medium])
+        }
+        .sheet(item: $selectedVisit) { visit in
+            VisitDetailView(
+                visit: visit,
+                onEnd: { await visitViewModel.end(visit) },
+                onDelete: { await visitViewModel.delete(visit) }
+            )
             .presentationDetents([.medium])
         }
     }
@@ -239,11 +261,14 @@ struct ParkingHomeView: View {
     }
 }
 
+
 #Preview {
     NavigationStack {
         ParkingHomeView(
             viewModel: ParkingHomeViewModel(repository: MockParkingRepository()),
+            visitViewModel: VisitListViewModel(repository: MockVisitRepository()),
             searchRepository: MockVehicleSearchRepository()
         )
     }
 }
+

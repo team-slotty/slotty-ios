@@ -14,6 +14,8 @@ struct Slotty_iosApp: App {
     @State private var visitViewModel = VisitListViewModel(repository: Self.visitRepository)
     /// 스플래시를 보여 주는 중인지
     @State private var isLaunching = true
+    /// 로그인했는지 - 자동 로그인 전까지는 앱을 켤 때마다 로그인
+    @State private var isLoggedIn = false
     
     var body: some Scene {
         WindowGroup {
@@ -24,6 +26,10 @@ struct Slotty_iosApp: App {
                         try? await Task.sleep(for: .seconds(1))
                         isLaunching = false
                     }
+            } else if !isLoggedIn {
+                LoginView(viewModel: LoginViewModel(repository: Self.authRepository)) {
+                    isLoggedIn = true
+                }
             } else {
                 MainTabView(
                     parkingViewModel: parkingViewModel,
@@ -46,6 +52,10 @@ struct Slotty_iosApp: App {
     /// 서버에 검색 API가 생기기 전까지는 항상 목 저장소
     private static var vehicleSearchRepository: any VehicleSearchRepository {
         MockVehicleSearchRepository()
+    }
+    /// 서버에 로그인 API가 생기기 전까지는 항상 목 저장소
+    private static var authRepository: any AuthRepository {
+        MockAuthRepository()
     }
     /// 서버에 방문 API가 생기기 전까지는 항상 목 저장소
     private static var visitRepository: any VisitRepository {

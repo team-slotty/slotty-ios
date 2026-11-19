@@ -11,6 +11,8 @@ import Foundation
 enum AuthError: Error, Equatable {
     /// 아이디 또는 비밀번호가 맞지 않음
     case invalidCredentials
+    /// 이미 쓰는 아이디
+    case loginIdDuplicated
     /// 서버에 아직 없는 기능
     case notSupported
 }

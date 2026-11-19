@@ -27,8 +27,10 @@ struct Slotty_iosApp: App {
                         isLaunching = false
                     }
             } else if !isLoggedIn {
-                LoginView(viewModel: LoginViewModel(repository: Self.authRepository)) {
-                    isLoggedIn = true
+                NavigationStack {
+                    LoginView(viewModel: LoginViewModel(repository: Self.authRepository)) {
+                        isLoggedIn = true
+                    }
                 }
             } else {
                 MainTabView(

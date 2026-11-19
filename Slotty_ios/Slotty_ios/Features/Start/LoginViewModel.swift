@@ -29,6 +29,11 @@ final class LoginViewModel {
         !loginId.isEmpty && !password.isEmpty && !isLoggingIn
     }
     
+    /// 회원가입 화면에 넘길 ViewModel - 같은 저장소를 써서 가입한 계정으로 바로 로그인할 수 있다
+    func makeSignUpViewModel() -> SignUpViewModel {
+        SignUpViewModel(repository: repository)
+    }
+    
     /// 로그인 - 성공하면 true
     func login() async -> Bool {
         isLoggingIn = true

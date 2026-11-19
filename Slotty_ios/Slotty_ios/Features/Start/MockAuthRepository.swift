@@ -18,4 +18,12 @@ final class MockAuthRepository: AuthRepository {
             throw AuthError.invalidCredentials
         }
     }
+    
+    /// 가입한 계정은 앱이 켜져 있는 동안 로그인에 쓸 수 있다
+    func signUp(_ form: SignUpForm) async throws {
+        guard accounts[form.loginId] == nil else {
+            throw AuthError.loginIdDuplicated
+        }
+        accounts[form.loginId] = form.password
+    }
 }

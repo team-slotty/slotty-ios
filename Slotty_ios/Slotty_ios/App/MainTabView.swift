@@ -11,19 +11,24 @@ import SwiftUI
 struct MainTabView: View {
     let parkingViewModel: ParkingHomeViewModel
     let searchRepository: any VehicleSearchRepository
-    let visitRepository: any VisitRepository
+    /// 홈 카드와 방문차량 탭이 같은 방문 목록을 본다
+    let visitViewModel: VisitListViewModel
     
     var body: some View {
         TabView {
             Tab("홈", systemImage: "house") {
                 NavigationStack {
-                    ParkingHomeView(viewModel: parkingViewModel, searchRepository: searchRepository)
+                    ParkingHomeView(
+                        viewModel: parkingViewModel,
+                        visitViewModel: visitViewModel,
+                        searchRepository: searchRepository
+                    )
                 }
             }
             Tab("방문차량", systemImage: "car.2") {
                 NavigationStack {
                     VisitListView(
-                        viewModel: VisitListViewModel(repository: visitRepository),
+                        viewModel: visitViewModel,
                         spotOptions: parkingViewModel.board?.visitorSpotNumbers ?? []
                     )
                 }
@@ -52,6 +57,6 @@ struct MainTabView: View {
     MainTabView(
         parkingViewModel: ParkingHomeViewModel(repository: MockParkingRepository()),
         searchRepository: MockVehicleSearchRepository(),
-        visitRepository: MockVisitRepository()
+        visitViewModel: VisitListViewModel(repository: MockVisitRepository())
     )
 }

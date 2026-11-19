@@ -14,7 +14,7 @@ struct Slotty_iosApp: App {
             MainTabView(
                 parkingViewModel: ParkingHomeViewModel(repository: Self.parkingRepository),
                 searchRepository: Self.vehicleSearchRepository,
-                visitRepository: Self.visitRepository
+                visitViewModel: VisitListViewModel(repository: Self.visitRepository)
             )
         }
     }

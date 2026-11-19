@@ -11,9 +11,13 @@ import SwiftUI
 struct SlottyLogo: View {
     /// 로고 너비, 높이는 너비에 맞춰 정해짐
     var width: CGFloat = 64
+    /// 차 색, nil 이면 빈 면
+    var carColor: Color? = SlottyColor.accent
+    /// 테두리 두께 (너비에 대한 비율)
+    var lineRatio: CGFloat = 0.14
     
     var body: some View {
-        let line = width * 0.14
+        let line = width * lineRatio
         ZStack(alignment: .bottom) {
             // 주차면 테두리: 왼쪽/오른쪽/아래
             HStack {
@@ -23,10 +27,12 @@ struct SlottyLogo: View {
             }
             Rectangle().frame(height: line)
             // 주차면 안의 차
-            RoundedRectangle(cornerRadius: width * 0.08)
-                .fill(SlottyColor.accent)
-                .frame(width: width * 0.4, height: width * 0.5)
-                .padding(.bottom, line * 2)
+            if let carColor {
+                RoundedRectangle(cornerRadius: width * 0.08)
+                    .fill(carColor)
+                    .frame(width: width * 0.4, height: width * 0.5)
+                    .padding(.bottom, line * 2)
+            }
         }
         .foregroundStyle(SlottyColor.primary)
         .frame(width: width, height: width * 1.35)

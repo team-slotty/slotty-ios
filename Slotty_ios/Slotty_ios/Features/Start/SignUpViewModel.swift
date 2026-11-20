@@ -40,6 +40,9 @@ final class SignUpViewModel {
         } catch AuthError.loginIdDuplicated {
             errorMessage = "이미 사용 중인 아이디예요"
             return false
+        } catch AuthError.notSupported {
+            errorMessage = "아직 가입할 수 없어요"
+            return false
         } catch {
             errorMessage = "가입하지 못했어요"
             return false

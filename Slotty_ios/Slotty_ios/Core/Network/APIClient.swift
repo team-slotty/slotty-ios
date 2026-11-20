@@ -12,6 +12,7 @@ struct APIClient {
     private let baseURL: URL
     private let session: URLSession
     private let decoder = JSONDecoder()
+    private let encoder = JSONEncoder()
     
     init(baseURL: URL = APIConfig.baseURL, session: URLSession = .shared) {
         self.baseURL = baseURL
@@ -21,13 +22,35 @@ struct APIClient {
     
     /// GET 요청을 보내고 응답 JSON을 원하는 타입으로 변환
     func get<Response: Decodable>(_ path: String) async throws -> Response {
-        let url = baseURL.appending(path: path)
-        let (data, response) = try await session.data(from: url)
+        let request = URLRequest(url: baseURL.appending(path: path))
+        return try await send(request)
+    }
+    
+    /// POST 요청으로 JSON을 보내고 응답 JSON을 원하는 타입으로 변환
+    func post<Body: Encodable, Response: Decodable>(_ path: String, body: Body) async throws -> Response {
+        var request = URLRequest(url: baseURL.appending(path: path))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try encoder.encode(body)
+        return try await send(request)
+    }
+    
+    /// 요청을 보내고 200번대가 아니면 에러, 맞으면 응답 변환
+    private func send<Response: Decodable>(_ request: URLRequest) async throws -> Response {
+        let (data, response) = try await session.data(for: request)
         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(statusCode) else {
-            throw APIError.badStatus(statusCode)
+            throw Self.error(statusCode: statusCode, data: data)
         }
         return try decoder.decode(Response.self, from: data)
+    }
+    
+    /// 실패 응답을 에러로 - 서버 에러 형식이면 code까지, 아니면 상태 코드만
+    static func error(statusCode: Int, data: Data) -> APIError {
+        guard let body = try? JSONDecoder().decode(ErrorResponse.self, from: data) else {
+            return .badStatus(statusCode)
+        }
+        return .server(statusCode: statusCode, code: body.code)
     }
     
     /// 서버 날짜 해석

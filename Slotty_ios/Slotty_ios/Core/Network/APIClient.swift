@@ -13,10 +13,13 @@ struct APIClient {
     private let session: URLSession
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
+    /// 요청에 붙일 로그인 토큰을 읽는 곳
+    private let tokenStore: any TokenStore
     
-    init(baseURL: URL = APIConfig.baseURL, session: URLSession = .shared) {
+    init(baseURL: URL = APIConfig.baseURL, session: URLSession = .shared, tokenStore: any TokenStore = KeychainTokenStore()) {
         self.baseURL = baseURL
         self.session = session
+        self.tokenStore = tokenStore
         decoder.dateDecodingStrategy = .custom(Self.decodeServerDate)
     }
     
@@ -37,12 +40,22 @@ struct APIClient {
     
     /// 요청을 보내고 200번대가 아니면 에러, 맞으면 응답 변환
     private func send<Response: Decodable>(_ request: URLRequest) async throws -> Response {
-        let (data, response) = try await session.data(for: request)
+        let (data, response) = try await session.data(for: authorized(request))
         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(statusCode) else {
             throw Self.error(statusCode: statusCode, data: data)
         }
         return try decoder.decode(Response.self, from: data)
+    }
+    
+    /// 저장된 토큰이 있으면 Authorization: Bearer 헤더를 붙인다
+    func authorized(_ request: URLRequest) -> URLRequest {
+        guard let accessToken = tokenStore.load()?.accessToken else {
+            return request
+        }
+        var request = request
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        return request
     }
     
     /// 실패 응답을 에러로 - 서버 에러 형식이면 code까지, 아니면 상태 코드만

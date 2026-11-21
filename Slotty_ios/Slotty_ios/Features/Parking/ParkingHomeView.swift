@@ -51,6 +51,20 @@ struct ParkingHomeView: View {
         .task {
             await reload()
         }
+        .alert(viewModel.errorMessage ?? "", isPresented: isShowingActionError) {
+            Button("확인", role: .cancel) {}
+        }
+    }
+    
+    /// 현황판이 떠 있을 때 동작이 실패하면 알림창으로 - 처음 못 불러온 경우는 화면 가운데 문구로 보여 준다
+    private var isShowingActionError: Binding<Bool> {
+        Binding(get: { viewModel.board != nil && viewModel.errorMessage != nil },
+                set: { isShowing in
+            if !isShowing {
+                viewModel.dismissError()
+            }
+        }
+        )
     }
     
     /// 현황판과 오늘 방문 예정을 다시 불러온다 - 처음 열 때와 당겨서 새로고침할 때

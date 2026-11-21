@@ -22,6 +22,11 @@ final class ParkingHomeViewModel {
         self.repository = repository
     }
     
+    /// 오류 문구를 지운다 - 알림창에서 [확인]을 눌렀을 때
+    func dismissError() {
+        errorMessage = nil
+    }
+    
     /// 현황판 불러오기
     func load() async {
         do {

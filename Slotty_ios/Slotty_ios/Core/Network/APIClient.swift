@@ -43,7 +43,9 @@ struct APIClient {
         let (data, response) = try await session.data(for: authorized(request))
         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(statusCode) else {
-            throw Self.error(statusCode: statusCode, data: data)
+            let error = Self.error(statusCode: statusCode, data: data)
+            expireSessionIfNeeded(error)
+            throw error
         }
         return try decoder.decode(Response.self, from: data)
     }
@@ -64,6 +66,13 @@ struct APIClient {
             return .badStatus(statusCode)
         }
         return .server(statusCode: statusCode, code: body.code)
+    }
+    
+    /// 로그인이 풀렸다는 응답(UNAUTHORIZED)이면 토큰을 지우고 앱에 알린다
+    func expireSessionIfNeeded(_ error: APIError) {
+        guard case .server(_, code: "UNAUTHORIZED") = error else { return }
+        tokenStore.clear()
+        NotificationCenter.default.post(name: .sessionExpired, object: nil)
     }
     
     /// 서버 날짜 해석

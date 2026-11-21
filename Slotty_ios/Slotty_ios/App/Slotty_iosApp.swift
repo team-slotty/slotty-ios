@@ -38,6 +38,10 @@ struct Slotty_iosApp: App {
                     searchRepository: Self.vehicleSearchRepository,
                     visitViewModel: visitViewModel
                 )
+                // 토큰이 없거나 만료되면 로그인 화면으로
+                .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
+                    isLoggedIn = false
+                }
             }
         }
     }

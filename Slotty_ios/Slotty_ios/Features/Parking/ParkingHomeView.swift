@@ -49,9 +49,14 @@ struct ParkingHomeView: View {
             }
         }
         .task {
-            await viewModel.load()
-            await visitViewModel.load()
+            await reload()
         }
+    }
+    
+    /// 현황판과 오늘 방문 예정을 다시 불러온다 - 처음 열 때와 당겨서 새로고침할 때
+    private func reload() async {
+        await viewModel.load()
+        await visitViewModel.load()
     }
     
     private func content(_ board: ParkingBoard) -> some View {
@@ -69,6 +74,9 @@ struct ParkingHomeView: View {
             .padding(20)
         }
         .background(SlottyColor.background)
+        .refreshable {
+            await reload()
+        }
         .sheet(item: $selectedSpot, onDismiss: {
             correctingSpot = pendingCorrectionSpot
             pendingCorrectionSpot = nil

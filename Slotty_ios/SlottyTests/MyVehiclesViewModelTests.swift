@@ -1,5 +1,5 @@
 //
-//  MyVehicleViewModelTests.swift
+//  MyVehiclesViewModelTests.swift
 //  SlottyTests
 //
 //  Created by WuHeuiJeong on 11/22/26.

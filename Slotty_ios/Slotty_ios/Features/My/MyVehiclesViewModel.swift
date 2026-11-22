@@ -1,5 +1,5 @@
 //
-//  MyVehicleViewModel.swift
+//  MyVehiclesViewModel.swift
 //  Slotty
 //
 //  Created by WuHeuiJeong on 11/22/26.

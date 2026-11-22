@@ -43,7 +43,7 @@ final class ParkingHomeViewModel {
             board = try await repository.exit(spotNumber: spotNumber)
             errorMessage = nil
         } catch {
-            errorMessage = "출차하지 못했어요"
+            errorMessage = (error as? APIError)?.serverMessage ?? "출차하지 못했어요"
         }
     }
     

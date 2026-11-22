@@ -43,9 +43,19 @@ struct LiveParkingRepository: ParkingRepository {
         return try await fetchBoard()
     }
     
+    /// 그 면에 서 있는 우리 세대 차를 출차하고, 바뀐 현황판을 다시 불러온다
     func exit(spotNumber: Int) async throws -> ParkingBoard {
-        // 서버에 출차 API가 아직 없음
-        throw ParkingError.notSupported
+        do {
+            let options: CheckOutOptionsResponse = try await client.get("/api/parking/check-out-options")
+            guard let vehicle = options.vehicles.first(where: { $0.slotId == spotNumber }) else {
+                throw ParkingError.vehicleNotFound
+            }
+            let request = CheckOutRequest(vehicleId: vehicle.vehicleId, method: "MANUAL")
+            let _: CheckOutResponse = try await client.post("/api/parking/check-out", body: request)
+        } catch APIError.server(_, code: "NOT_PARKED", _) {
+            // 이미 출차됨 - 다시 눌렀거나 재시도한 경우라 성공으로 본다 (출차에는 중복 방지 id가 없음)
+        }
+        return try await fetchBoard()
     }
     
     func recordUnidentified(spotNumber: Int) async throws -> ParkingBoard {

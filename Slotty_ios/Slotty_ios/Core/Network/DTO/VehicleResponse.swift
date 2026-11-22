@@ -16,4 +16,18 @@ struct VehicleCreateRequest: Encodable {
 struct VehicleResponse: Decodable {
     let vehicleId: Int
     let plateNumber: String
+    /// 연락 담당자, 지정 전이면 null
+    let contactUser: ContactUser?
+    
+    struct ContactUser: Decodable {
+        let userId: Int
+        let name: String
+    }
+}
+
+extension VehicleResponse {
+    /// 앱 모델로 변환
+    func toRegisteredVehicle() -> RegisteredVehicle {
+        RegisteredVehicle(id: vehicleId, plateNumber: plateNumber, contactName: contactUser?.name)
+    }
 }

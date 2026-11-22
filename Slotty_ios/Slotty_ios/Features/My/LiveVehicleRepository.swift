@@ -15,9 +15,18 @@ struct LiveVehicleRepository: VehicleRepository {
         self.client = client
     }
     
+    func fetchVehicles() async throws -> [RegisteredVehicle] {
+        let response: [VehicleResponse] = try await client.get("/api/vehicles")
+        return response.map { $0.toRegisteredVehicle() }
+    }
+    
     /// contactUserId를 보내지 않으면 서버가 본인을 담당자로 정한다
     func register(plateNumber: String) async throws {
         let request = VehicleCreateRequest(plateNumber: plateNumber)
         let _: VehicleResponse = try await client.post("/api/vehicles", body: request)
+    }
+    
+    func delete(vehicleId: Int) async throws {
+        try await client.delete("/api/vehicles/\(vehicleId)")
     }
 }

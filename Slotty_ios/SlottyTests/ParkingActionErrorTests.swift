@@ -12,8 +12,17 @@ import Testing
 /// 현황판 동작이 실패했을 때 오류 문구
 @MainActor
 struct ParkingActionErrorTests {
-    /// 서버 저장소는 출차 API가 아직 없어 항상 실패한다
-    private let viewModel = ParkingHomeViewModel(repository: LiveParkingRepository())
+    /// 모든 동작이 실패하는 테스트용 저장소
+    private final class FailingParkingRepository: ParkingRepository {
+        func fetchBoard() async throws -> ParkingBoard { throw ParkingError.notSupported }
+        func checkInOptions() async throws -> CheckInOptions { throw ParkingError.notSupported }
+        func enter(vehicle: Vehicle, spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }
+        func exit(spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }
+        func recordUnidentified(spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }
+        func markAsMine(spotNumber: Int, vehicle: Vehicle) async throws -> ParkingBoard { throw ParkingError.notSupported }
+    }
+    
+    private let viewModel = ParkingHomeViewModel(repository: FailingParkingRepository())
     
     @Test func 출차가_실패하면_문구가_생긴다() async {
         await viewModel.exit(spotNumber: 1)

@@ -202,6 +202,13 @@ struct ParkingHomeView: View {
     /// 우리 세대 차 카드 목록
     private func myVehicles(_ board: ParkingBoard) -> some View {
         VStack(spacing: 12) {
+            if board.myVehicles.isEmpty {
+                // 입차하려면 차량이 있어야 해서 등록할 곳을 알려 준다
+                Text("등록된 차량이 없어요. 마이 탭에서 차량을 등록해 주세요.")
+                    .font(SlottyFont.caption)
+                    .foregroundStyle(SlottyColor.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             ForEach(board.myVehicles) { vehicle in
                 let parkedSpot = board.spot(parkedBy: vehicle)
                 MyVehicleCard(

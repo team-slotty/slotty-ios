@@ -13,6 +13,9 @@ final class MockAuthRepository: AuthRepository {
     /// 아이디 -> 비밀번호
     private var accounts = ["kim101": "slotty1234"]
     
+    /// 목 저장소는 로그인을 기억하지 않는다 - 앱을 켤 때마다 로그인
+    var hasSavedLogin: Bool { false }
+    
     func login(loginId: String, password: String) async throws {
         guard accounts[loginId] == password else {
             throw AuthError.invalidCredentials

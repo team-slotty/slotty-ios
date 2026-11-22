@@ -63,7 +63,8 @@ struct Slotty_iosApp: App {
             MainTabView(
                 parkingViewModel: parkingViewModel,
                 searchRepository: Self.vehicleSearchRepository,
-                visitViewModel: visitViewModel
+                visitViewModel: visitViewModel,
+                vehicleRepository: Self.vehicleRepository
             )
         }
     }
@@ -94,6 +95,15 @@ struct Slotty_iosApp: App {
         }
 #endif
         return LiveHouseholdRepository()
+    }
+    /// 실행 인자에 -useMockData가 있으면 목 저장소, 없으면 서버 저장소 (Debug 빌드에서만)
+    private static var vehicleRepository: any VehicleRepository {
+#if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-useMockData") {
+            return MockVehicleRepository()
+        }
+#endif
+        return LiveVehicleRepository()
     }
     /// 서버에 검색 API가 생기기 전까지는 항상 목 저장소
     private static var vehicleSearchRepository: any VehicleSearchRepository {

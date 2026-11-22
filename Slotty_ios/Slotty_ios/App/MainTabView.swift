@@ -13,6 +13,8 @@ struct MainTabView: View {
     let searchRepository: any VehicleSearchRepository
     /// 홈 카드와 방문차량 탭이 같은 방문 목록을 본다
     let visitViewModel: VisitListViewModel
+    /// 마이 탭의 차량 등록에 쓰는 저장소
+    let vehicleRepository: any VehicleRepository
     
     var body: some View {
         TabView {
@@ -35,7 +37,7 @@ struct MainTabView: View {
             }
             Tab("마이", systemImage: "person") {
                 NavigationStack {
-                    MyHomeView(viewModel: parkingViewModel)
+                    MyHomeView(viewModel: parkingViewModel, vehicleRepository: vehicleRepository)
                 }
             }
             Tab("관리", systemImage: "gearshape") {
@@ -57,6 +59,7 @@ struct MainTabView: View {
     MainTabView(
         parkingViewModel: ParkingHomeViewModel(repository: MockParkingRepository()),
         searchRepository: MockVehicleSearchRepository(),
-        visitViewModel: VisitListViewModel(repository: MockVisitRepository())
+        visitViewModel: VisitListViewModel(repository: MockVisitRepository()),
+        vehicleRepository: MockVehicleRepository()
     )
 }

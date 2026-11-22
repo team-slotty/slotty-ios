@@ -11,7 +11,9 @@ import SwiftUI
 struct MyHomeView: View {
     /// 홈과 같은 ViewModel - 입출차하면 차 요약도 함께 바뀐다
     let viewModel: ParkingHomeViewModel
-
+    /// 차량 등록 화면에 넘겨줄 저장소
+    let vehicleRepository: any VehicleRepository
+    
     var body: some View {
         Group {
             if let board = viewModel.board {
@@ -23,7 +25,7 @@ struct MyHomeView: View {
         .navigationTitle("마이")
         .navigationBarTitleDisplayMode(.inline)
     }
-
+    
     private func content(_ board: ParkingBoard) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -35,7 +37,7 @@ struct MyHomeView: View {
         }
         .background(SlottyColor.background)
     }
-
+    
     /// 빌라 이름과 내 세대 호수
     private func household(_ board: ParkingBoard) -> some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -53,7 +55,7 @@ struct MyHomeView: View {
                 .strokeBorder(SlottyColor.line)
         }
     }
-
+    
     /// 우리 세대 차 요약 - 예: "12가3456 / 남편 차 · 2번 면 주차 중"
     private func vehicles(_ board: ParkingBoard) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -81,16 +83,24 @@ struct MyHomeView: View {
                         .strokeBorder(SlottyColor.line)
                 }
             }
+            NavigationLink("+ 차량 등록") {
+                VehicleRegisterView(viewModel: VehicleRegisterViewModel(repository: vehicleRepository)) {
+                    // 등록한 차가 홈과 마이의 내 차량에 바로 보이도록
+                    await viewModel.load()
+                }
+            }
+            .font(SlottyFont.body)
+            .foregroundStyle(SlottyColor.primary)
         }
     }
-
+    
     /// 별칭과 주차 상태 - 주차 중이 아니면 "운행 중"
     private func vehicleStatus(_ vehicle: Vehicle, in board: ParkingBoard) -> String {
         let status = board.spot(parkedBy: vehicle).map { "\($0.number)번 면 주차 중" } ?? "운행 중"
         guard let nickname = vehicle.nickname else { return status }
         return "\(nickname) · \(status)"
     }
-
+    
     /// 하위 화면 메뉴 - 가용시간은 배정 면이 있는 세대만 보인다
     private func menu(_ board: ParkingBoard) -> some View {
         let hasAssignedSpot = board.spots.contains { $0.isAssigned(to: board.myUnit) }
@@ -108,7 +118,7 @@ struct MyHomeView: View {
                 .strokeBorder(SlottyColor.line)
         }
     }
-
+    
     /// 메뉴 한 줄 - 아직 만들지 않은 화면은 임시 화면으로 이동
     private func menuRow(_ title: String) -> some View {
         NavigationLink {
@@ -134,7 +144,7 @@ struct MyHomeView: View {
 #Preview {
     let viewModel = ParkingHomeViewModel(repository: MockParkingRepository())
     NavigationStack {
-        MyHomeView(viewModel: viewModel)
+        MyHomeView(viewModel: viewModel, vehicleRepository: MockVehicleRepository())
     }
     .task { await viewModel.load() }
 }

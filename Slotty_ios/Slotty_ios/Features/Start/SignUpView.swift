@@ -10,10 +10,12 @@ import SwiftUI
 /// 0-3 회원가입 : 아이디/비밀번호/이름/전화번호, 약관 동의, 연락처 공개
 struct SignUpView: View {
     @State private var viewModel: SignUpViewModel
-    @Environment(\.dismiss) private var dismiss
+    /// 가입에 성공했을 때 - 가입하면 바로 로그인된 상태가 된다
+    let onSignUp: () -> Void
     
-    init(viewModel: SignUpViewModel) {
+    init(viewModel: SignUpViewModel, onSignUp: @escaping () -> Void) {
         _viewModel = State(initialValue: viewModel)
+        self.onSignUp = onSignUp
     }
     
     var body: some View {
@@ -49,7 +51,7 @@ struct SignUpView: View {
             Button("가입하기") {
                 Task {
                     if await viewModel.signUp() {
-                        dismiss()
+                        onSignUp()
                     }
                 }
             }
@@ -82,6 +84,6 @@ struct SignUpView: View {
 
 #Preview {
     NavigationStack {
-        SignUpView(viewModel: SignUpViewModel(repository: MockAuthRepository()))
+        SignUpView(viewModel: SignUpViewModel(repository: MockAuthRepository())) {}
     }
 }

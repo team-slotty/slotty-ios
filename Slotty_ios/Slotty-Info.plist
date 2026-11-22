@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
-	<key>API_BASE_URL</key>
-	<string>$(API_BASE_URL)</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>NotoSansKR-Regular.ttf</string>
-		<string>NotoSansKR-Medium.ttf</string>
-		<string>NotoSansKR-Bold.ttf</string>
-	</array>
-</dict>
+    <dict>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <!-- 배포 서버가 HTTP + IP 주소라 도메인별 예외를 쓸 수 없음. HTTPS 도메인이 생기면 제거 -->
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+        </dict>
+        <key>API_BASE_URL</key>
+        <string>$(API_BASE_URL)</string>
+        <key>UIAppFonts</key>
+        <array>
+            <string>NotoSansKR-Regular.ttf</string>
+            <string>NotoSansKR-Medium.ttf</string>
+            <string>NotoSansKR-Bold.ttf</string>
+        </array>
+    </dict>
 </plist>

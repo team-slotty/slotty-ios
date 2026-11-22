@@ -17,6 +17,12 @@ struct LiveAuthRepository: AuthRepository {
         self.tokenStore = tokenStore
     }
     
+    /// Keychain에 토큰이 남아 있으면 저장된 로그인으로 본다
+    /// 만료됐어도 첫 요청에서 재발급하고, 재발급도 실패하면 로그인 화면으로 돌아간다
+    var hasSavedLogin: Bool {
+        tokenStore.load() != nil
+    }
+    
     /// 로그인 - 성공하면 토큰을 저장하고, 서버가 INVALID_LOGIN을 보내면 아이디/비밀번호 오류
     func login(loginId: String, password: String) async throws {
         let response: TokenResponse

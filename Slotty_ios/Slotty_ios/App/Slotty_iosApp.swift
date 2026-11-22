@@ -14,7 +14,7 @@ struct Slotty_iosApp: App {
     @State private var visitViewModel = VisitListViewModel(repository: Self.visitRepository)
     /// 스플래시를 보여 주는 중인지
     @State private var isLaunching = true
-    /// 로그인했는지 - 자동 로그인 전까지는 앱을 켤 때마다 로그인
+    /// 로그인했는지 - 스플래시에서 저장된 로그인이 있으면 true로 시작
     @State private var isLoggedIn = false
     
     var body: some Scene {
@@ -22,8 +22,9 @@ struct Slotty_iosApp: App {
             if isLaunching {
                 SplashView()
                     .task {
-                        // 자동 로그인이 생기기 전까지는 1초만 보여 준다
+                        // 스플래시를 1초 보여 준 뒤, 저장된 로그인이 있으면 로그인 화면을 건너뛴다
                         try? await Task.sleep(for: .seconds(1))
+                        isLoggedIn = Self.authRepository.hasSavedLogin
                         isLaunching = false
                     }
             } else if !isLoggedIn {

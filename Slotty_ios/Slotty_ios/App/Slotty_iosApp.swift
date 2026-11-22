@@ -16,6 +16,8 @@ struct Slotty_iosApp: App {
     @State private var isLaunching = true
     /// 로그인했는지 - 스플래시에서 저장된 로그인이 있으면 true로 시작
     @State private var isLoggedIn = false
+    /// 세대에 소속됐는지 - 로그인할 때마다 내 정보로 다시 확인, 확인 전이면 nil
+    @State private var hasHousehold: Bool?
     
     var body: some Scene {
         WindowGroup {
@@ -30,20 +32,48 @@ struct Slotty_iosApp: App {
             } else if !isLoggedIn {
                 NavigationStack {
                     LoginView(viewModel: LoginViewModel(repository: Self.authRepository)) {
+                        hasHousehold = nil
                         isLoggedIn = true
                     }
                 }
             } else {
-                MainTabView(
-                    parkingViewModel: parkingViewModel,
-                    searchRepository: Self.vehicleSearchRepository,
-                    visitViewModel: visitViewModel
-                )
+                loggedInContent
                 // 토큰이 없거나 만료되면 로그인 화면으로
-                .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
-                    isLoggedIn = false
+                    .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
+                        isLoggedIn = false
+                    }
+            }
+        }
+    }
+    
+    /// 로그인 뒤 - 세대 소속을 확인하고, 소속 전이면 시작 방법 선택, 소속이면 메인 탭
+    @ViewBuilder
+    private var loggedInContent: some View {
+        switch hasHousehold {
+        case nil:
+            ProgressView()
+                .task { await checkHousehold() }
+        case false?:
+            NavigationStack {
+                StartChoiceView(householdRepository: Self.householdRepository) {
+                    hasHousehold = true
                 }
             }
+        case true?:
+            MainTabView(
+                parkingViewModel: parkingViewModel,
+                searchRepository: Self.vehicleSearchRepository,
+                visitViewModel: visitViewModel
+            )
+        }
+    }
+    
+    /// 내 정보로 세대 소속 확인 - 확인에 실패하면 메인 탭으로 보내고, 홈의 오류 안내와 새로고침에 맡긴다
+    private func checkHousehold() async {
+        do {
+            hasHousehold = try await Self.householdRepository.fetchMyUnit() != nil
+        } catch {
+            hasHousehold = true
         }
     }
     
@@ -55,6 +85,15 @@ struct Slotty_iosApp: App {
         }
 #endif
         return LiveParkingRepository()
+    }
+    /// 실행 인자에 -useMockData가 있으면 목 저장소, 없으면 서버 저장소 (Debug 빌드에서만)
+    private static var householdRepository: any HouseholdRepository {
+#if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-useMockData") {
+            return MockHouseholdRepository()
+        }
+#endif
+        return LiveHouseholdRepository()
     }
     /// 서버에 검색 API가 생기기 전까지는 항상 목 저장소
     private static var vehicleSearchRepository: any VehicleSearchRepository {

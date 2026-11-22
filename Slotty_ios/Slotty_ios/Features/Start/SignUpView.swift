@@ -10,17 +10,19 @@ import SwiftUI
 /// 0-3 회원가입 : 아이디/비밀번호/이름/전화번호, 약관 동의, 연락처 공개
 struct SignUpView: View {
     @State private var viewModel: SignUpViewModel
-    @Environment(\.dismiss) private var dismiss
+    /// 가입에 성공했을 때 - 가입하면 바로 로그인된 상태가 된다
+    let onSignUp: () -> Void
     
-    init(viewModel: SignUpViewModel) {
+    init(viewModel: SignUpViewModel, onSignUp: @escaping () -> Void) {
         _viewModel = State(initialValue: viewModel)
+        self.onSignUp = onSignUp
     }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                LabeledInput(label: "아이디", placeholder: "영문, 숫자 4~20자", text: $viewModel.form.loginId)
-                LabeledInput(label: "비밀번호", placeholder: "8자 이상", text: $viewModel.form.password, isSecure: true)
+                LabeledInput(label: "아이디", placeholder: "영문, 숫자 4~30자", text: $viewModel.form.loginId)
+                LabeledInput(label: "비밀번호", placeholder: "8~72자", text: $viewModel.form.password, isSecure: true)
                 LabeledInput(
                     label: "비밀번호 확인", placeholder: "비밀번호 다시 입력",
                     text: $viewModel.form.passwordConfirm, isSecure: true
@@ -49,7 +51,7 @@ struct SignUpView: View {
             Button("가입하기") {
                 Task {
                     if await viewModel.signUp() {
-                        dismiss()
+                        onSignUp()
                     }
                 }
             }
@@ -82,6 +84,6 @@ struct SignUpView: View {
 
 #Preview {
     NavigationStack {
-        SignUpView(viewModel: SignUpViewModel(repository: MockAuthRepository()))
+        SignUpView(viewModel: SignUpViewModel(repository: MockAuthRepository())) {}
     }
 }

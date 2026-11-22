@@ -31,11 +31,12 @@ struct SignUpForm: Equatable {
     
     /// 입력에 문제가 있으면 안내 문구, 없으면 nil - 위에서부터 걸리는 것 하나만
     var problem: String? {
-        if loginId.wholeMatch(of: /[A-Za-z0-9]{4,20}/) == nil {
-            return "아이디는 영문, 숫자 4~20자로 입력해 주세요"
+        // 서버 규칙과 같게 - 아이디 4~30자, 비밀번호 8~72자
+        if loginId.wholeMatch(of: /[A-Za-z0-9]{4,30}/) == nil {
+            return "아이디는 영문, 숫자 4~30자로 입력해 주세요"
         }
-        if password.count < 8 {
-            return "비밀번호는 8자 이상 입력해 주세요"
+        if !(8...72).contains(password.count) {
+            return "비밀번호는 8~72자로 입력해 주세요"
         }
         if password != passwordConfirm {
             return "비밀번호가 서로 달라요"

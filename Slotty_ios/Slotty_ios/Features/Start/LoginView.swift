@@ -53,7 +53,8 @@ struct LoginView: View {
                     Text("계정이 없으신가요?")
                         .foregroundStyle(SlottyColor.primary)
                     NavigationLink("회원가입") {
-                        SignUpView(viewModel: viewModel.makeSignUpViewModel())
+                        // 가입 응답으로 토큰을 받아서 로그인과 똑같이 처리한다
+                        SignUpView(viewModel: viewModel.makeSignUpViewModel(), onSignUp: onLogin)
                     }
                     .foregroundStyle(SlottyColor.primary)
                 }

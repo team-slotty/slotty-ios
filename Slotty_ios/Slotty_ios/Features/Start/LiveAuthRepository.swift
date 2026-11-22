@@ -35,8 +35,14 @@ struct LiveAuthRepository: AuthRepository {
         try tokenStore.save(AuthTokens(accessToken: response.accessToken, refreshToken: response.refreshToken))
     }
     
+    /// 회원가입 - 성공하면 로그인처럼 토큰을 저장하고, 이미 쓰는 아이디면 AuthError.loginIdDuplicated
     func signUp(_ form: SignUpForm) async throws {
-        // 서버에 회원가입 API가 아직 없음
-        throw AuthError.notSupported
+        let response: TokenResponse
+        do {
+            response = try await client.post("/api/auth/signup", body: SignUpRequest(form: form))
+        } catch APIError.server(_, code: "LOGIN_ID_DUPLICATED", _) {
+            throw AuthError.loginIdDuplicated
+        }
+        try tokenStore.save(AuthTokens(accessToken: response.accessToken, refreshToken: response.refreshToken))
     }
 }

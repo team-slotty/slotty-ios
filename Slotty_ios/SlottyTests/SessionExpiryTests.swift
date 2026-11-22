@@ -18,7 +18,7 @@ struct SessionExpiryTests {
         let store = InMemoryTokenStore(tokens: tokens)
         let client = APIClient(tokenStore: store)
         
-        client.expireSessionIfNeeded(.server(statusCode: 401, code: "UNAUTHORIZED"))
+        client.expireSessionIfNeeded(.server(statusCode: 401, code: "UNAUTHORIZED", message: "로그인이 필요합니다."))
         
         #expect(store.tokens == nil)
     }
@@ -27,7 +27,7 @@ struct SessionExpiryTests {
         let store = InMemoryTokenStore(tokens: tokens)
         let client = APIClient(tokenStore: store)
         
-        client.expireSessionIfNeeded(.server(statusCode: 403, code: "NOT_IN_HOUSEHOLD"))
+        client.expireSessionIfNeeded(.server(statusCode: 403, code: "NOT_IN_HOUSEHOLD", message: "세대에 소속된 사용자만 이용할 수 있습니다."))
         client.expireSessionIfNeeded(.badStatus(500))
         
         #expect(store.tokens == tokens)

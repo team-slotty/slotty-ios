@@ -51,7 +51,7 @@ struct APIClient {
         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(statusCode) else {
             let error = Self.error(statusCode: statusCode, data: data)
-            if retrying, case .server(_, code: "UNAUTHORIZED") = error, await reissue() {
+            if retrying, case .server(_, code: "UNAUTHORIZED", _) = error, await reissue() {
                 return try await self.data(for: request, retrying: false)
             }
             expireSessionIfNeeded(error)
@@ -97,12 +97,12 @@ struct APIClient {
         guard let body = try? JSONDecoder().decode(ErrorResponse.self, from: data) else {
             return .badStatus(statusCode)
         }
-        return .server(statusCode: statusCode, code: body.code)
+        return .server(statusCode: statusCode, code: body.code, message: body.message)
     }
 
     /// 로그인이 풀렸다는 응답(UNAUTHORIZED)이면 토큰을 지우고 앱에 알린다
     func expireSessionIfNeeded(_ error: APIError) {
-        guard case .server(_, code: "UNAUTHORIZED") = error else { return }
+        guard case .server(_, code: "UNAUTHORIZED", _) = error else { return }
         tokenStore.clear()
         NotificationCenter.default.post(name: .sessionExpired, object: nil)
     }

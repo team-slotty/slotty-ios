@@ -7,9 +7,11 @@
 
 import SwiftUI
 
-/// [변경] - 입차할 주차면 고르기 (사용 중인 면은 선택 불가)
+/// [변경] - 입차할 주차면 고르기 (입차 옵션에 있는 면만)
 struct SpotSelectSheet: View {
     let board: ParkingBoard
+    /// 고를 수 있는 면 번호 - 이 순서대로 보여 준다
+    let spotNumbers: [Int]
     /// 지금 골라져 있는 면 번호, 없으면 nil
     let selectedNumber: Int?
     let onSelect: (Int) -> Void
@@ -21,7 +23,7 @@ struct SpotSelectSheet: View {
                 .foregroundStyle(SlottyColor.primary)
             ScrollView {
                 VStack(spacing: 8) {
-                    ForEach(board.spots) { spot in
+                    ForEach(selectableSpots) { spot in
                         Button {
                             onSelect(spot.number)
                         } label: {
@@ -31,12 +33,18 @@ struct SpotSelectSheet: View {
                             )
                         }
                         .buttonStyle(.plain)
-                        .disabled(spot.status.isOccupied)
                     }
                 }
             }
         }
         .padding(20)
+    }
+    
+    /// 입차 옵션 순서대로 현황판의 면을 찾는다
+    private var selectableSpots: [ParkingSpot] {
+        spotNumbers.compactMap { number in
+            board.spots.first { $0.number == number }
+        }
     }
     
     /// 예: "내 면", "102호", "공용"
@@ -49,5 +57,5 @@ struct SpotSelectSheet: View {
 }
 
 #Preview {
-    SpotSelectSheet(board: MockParkingData.board, selectedNumber: 3) { _ in }
+    SpotSelectSheet(board: MockParkingData.board, spotNumbers: [6, 7], selectedNumber: 6) { _ in }
 }

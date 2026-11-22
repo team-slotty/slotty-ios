@@ -17,6 +17,18 @@ final class MockParkingRepository: ParkingRepository {
         board
     }
     
+    /// 서버와 같은 규칙 - 빈 내 배정 면 -> 빈 공용 면, 찬 면과 남의 배정 면은 제외
+    func checkInOptions() async throws -> CheckInOptions {
+        let mySpots = board.spots.filter { $0.isAssigned(to: board.myUnit) }
+        let myEmptySpots = mySpots.filter { !$0.status.isOccupied }
+        let sharedEmptySpots = board.spots.filter { $0.isShared && !$0.status.isOccupied }
+        return CheckInOptions(
+            spotNumbers: (myEmptySpots + sharedEmptySpots).map(\.number),
+            suggestedSpotNumber: myEmptySpots.first?.number,
+            assignedAllOccupied: !mySpots.isEmpty && myEmptySpots.isEmpty
+        )
+    }
+    
     func enter(vehicle: Vehicle, spotNumber: Int) async throws ->
     ParkingBoard {
         guard let index = board.spots.firstIndex(where: { $0.number == spotNumber }) else {

@@ -11,6 +11,8 @@ import Foundation
 protocol ParkingRepository {
     /// 현황판 불러오기
     func fetchBoard() async throws -> ParkingBoard
+    /// 입차할 때 고를 수 있는 면
+    func checkInOptions() async throws -> CheckInOptions
     /// 입차: 차량을 해당 면에 기록하고, 바뀐 현황판을 돌려준다
     func enter(vehicle: Vehicle, spotNumber: Int) async throws ->
     ParkingBoard

@@ -29,7 +29,7 @@ struct LiveAuthRepository: AuthRepository {
         do {
             let request = LoginRequest(loginId: loginId, password: password)
             response = try await client.post("/api/auth/login", body: request)
-        } catch APIError.server(_, code: "INVALID_LOGIN") {
+        } catch APIError.server(_, code: "INVALID_LOGIN", _) {
             throw AuthError.invalidCredentials
         }
         try tokenStore.save(AuthTokens(accessToken: response.accessToken, refreshToken: response.refreshToken))

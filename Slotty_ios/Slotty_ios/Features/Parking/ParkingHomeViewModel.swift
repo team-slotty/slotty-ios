@@ -47,6 +47,11 @@ final class ParkingHomeViewModel {
         }
     }
     
+    /// 입차할 때 고를 수 있는 면 - 못 불러오면 nil (입차 화면에서 안내)
+    func checkInOptions() async -> CheckInOptions? {
+        try? await repository.checkInOptions()
+    }
+    
     /// 입차 - 성공하면 현황판을 바뀐 상태로 교체
     func enter(vehicle: Vehicle, spotNumber: Int) async {
         do {

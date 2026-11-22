@@ -22,6 +22,11 @@ struct LiveParkingRepository: ParkingRepository {
         return board.toBoard(myUnit: myVehicles.unitNumber, myVehicles: myVehicles.toVehicles())
     }
     
+    func checkInOptions() async throws -> CheckInOptions {
+        let response: CheckInOptionsResponse = try await client.get("/api/parking/check-in-options")
+        return response.toOptions()
+    }
+    
     func enter(vehicle: Vehicle, spotNumber: Int) async throws -> ParkingBoard {
         // 서버에 입차 API가 아직 없음
         throw ParkingError.notSupported

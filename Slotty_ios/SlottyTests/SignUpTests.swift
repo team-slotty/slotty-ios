@@ -31,7 +31,7 @@ struct SignUpTests {
     @Test func 아이디에_한글이_있으면_막힌다() {
         var form = validForm
         form.loginId = "이서연201"
-        #expect(form.problem == "아이디는 영문, 숫자 4~20자로 입력해 주세요")
+        #expect(form.problem == "아이디는 영문, 숫자 4~30자로 입력해 주세요")
     }
     
     @Test func 비밀번호_확인이_다르면_막힌다() {

@@ -19,8 +19,8 @@ struct SignUpView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                LabeledInput(label: "아이디", placeholder: "영문, 숫자 4~20자", text: $viewModel.form.loginId)
-                LabeledInput(label: "비밀번호", placeholder: "8자 이상", text: $viewModel.form.password, isSecure: true)
+                LabeledInput(label: "아이디", placeholder: "영문, 숫자 4~30자", text: $viewModel.form.loginId)
+                LabeledInput(label: "비밀번호", placeholder: "8~72자", text: $viewModel.form.password, isSecure: true)
                 LabeledInput(
                     label: "비밀번호 확인", placeholder: "비밀번호 다시 입력",
                     text: $viewModel.form.passwordConfirm, isSecure: true

@@ -27,9 +27,20 @@ struct LiveParkingRepository: ParkingRepository {
         return response.toOptions()
     }
     
+    /// 입차 기록 후 바뀐 현황판을 다시 불러온다
     func enter(vehicle: Vehicle, spotNumber: Int) async throws -> ParkingBoard {
-        // 서버에 입차 API가 아직 없음
-        throw ParkingError.notSupported
+        guard let vehicleId = Int(vehicle.id) else {
+            throw ParkingError.vehicleNotFound
+        }
+        // 탭 한 번에 id 하나 - 토큰 재발급으로 다시 보낼 때도 같은 요청이라 중복 입차가 안 된다
+        let request = CheckInRequest(
+            vehicleId: vehicleId,
+            slotId: spotNumber,
+            method: "MANUAL",
+            clientRequestId: UUID().uuidString
+        )
+        let _: CheckInResponse = try await client.post("/api/parking/check-in", body: request)
+        return try await fetchBoard()
     }
     
     func exit(spotNumber: Int) async throws -> ParkingBoard {

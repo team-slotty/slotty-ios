@@ -58,6 +58,10 @@ final class ParkingHomeViewModel {
             board = try await repository.enter(vehicle: vehicle, spotNumber: spotNumber)
             errorMessage = nil
         } catch {
+            // 그 사이 다른 차가 들어온 면이면 현황판을 새로 받아 보여 준다
+            if case .server(_, code: "SLOT_OCCUPIED", _)? = error as? APIError {
+                await load()
+            }
             errorMessage = (error as? APIError)?.serverMessage ?? "입차하지 못했어요"
         }
     }
@@ -73,12 +77,12 @@ final class ParkingHomeViewModel {
     }
     
     /// 내 차예요 - 성공하면 현황판을 바뀐 상태로 교체
-       func markAsMine(spotNumber: Int, vehicle: Vehicle) async {
-           do {
-               board = try await repository.markAsMine(spotNumber: spotNumber, vehicle: vehicle)
-               errorMessage = nil
-           } catch {
-               errorMessage = "바로잡지 못했어요"
-           }
-       }
+    func markAsMine(spotNumber: Int, vehicle: Vehicle) async {
+        do {
+            board = try await repository.markAsMine(spotNumber: spotNumber, vehicle: vehicle)
+            errorMessage = nil
+        } catch {
+            errorMessage = "바로잡지 못했어요"
+        }
+    }
 }

@@ -53,7 +53,7 @@ final class ParkingHomeViewModel {
             board = try await repository.enter(vehicle: vehicle, spotNumber: spotNumber)
             errorMessage = nil
         } catch {
-            errorMessage = "입차하지 못했어요"
+            errorMessage = (error as? APIError)?.serverMessage ?? "입차하지 못했어요"
         }
     }
     

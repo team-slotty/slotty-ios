@@ -54,7 +54,7 @@ struct TokenReissueTests {
             return (401, unauthorized)
         }
 
-        await #expect(throws: APIError.server(statusCode: 401, code: "UNAUTHORIZED")) {
+        await #expect(throws: APIError.server(statusCode: 401, code: "UNAUTHORIZED", message: "로그인이 필요합니다.")) {
             let _: Ping = try await makeClient(store).get("/ping")
         }
         #expect(store.tokens == nil)

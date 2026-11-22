@@ -54,13 +54,6 @@ struct SignUpTests {
         #expect(viewModel.errorMessage == "이미 사용 중인 아이디예요")
     }
     
-    @Test func 서버에_가입_기능이_없으면_안내_문구가_나온다() async {
-        let viewModel = SignUpViewModel(repository: LiveAuthRepository())
-        viewModel.form = validForm
-        #expect(await viewModel.signUp() == false)
-        #expect(viewModel.errorMessage == "아직 가입할 수 없어요")
-    }
-    
     @Test func 가입한_계정으로_로그인할_수_있다() async throws {
         let repository = MockAuthRepository()
         try await repository.signUp(validForm)

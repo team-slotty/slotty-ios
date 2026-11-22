@@ -15,20 +15,20 @@ struct APIClient {
     private let encoder = JSONEncoder()
     /// 요청에 붙일 로그인 토큰을 읽는 곳
     private let tokenStore: any TokenStore
-
+    
     init(baseURL: URL = APIConfig.baseURL, session: URLSession = .shared, tokenStore: any TokenStore = KeychainTokenStore()) {
         self.baseURL = baseURL
         self.session = session
         self.tokenStore = tokenStore
         decoder.dateDecodingStrategy = .custom(Self.decodeServerDate)
     }
-
+    
     /// GET 요청을 보내고 응답 JSON을 원하는 타입으로 변환
     func get<Response: Decodable>(_ path: String) async throws -> Response {
         let request = URLRequest(url: baseURL.appending(path: path))
         return try await send(request)
     }
-
+    
     /// POST 요청으로 JSON을 보내고 응답 JSON을 원하는 타입으로 변환
     func post<Body: Encodable, Response: Decodable>(_ path: String, body: Body) async throws -> Response {
         var request = URLRequest(url: baseURL.appending(path: path))
@@ -37,13 +37,20 @@ struct APIClient {
         request.httpBody = try encoder.encode(body)
         return try await send(request)
     }
-
+    
     /// 요청을 보내고 200번대가 아니면 에러, 맞으면 응답 변환
     private func send<Response: Decodable>(_ request: URLRequest) async throws -> Response {
         let data = try await data(for: request)
         return try decoder.decode(Response.self, from: data)
     }
-
+    
+    /// DELETE 요청 - 성공 응답(204)에 본문이 없어서 돌려주는 값이 없다
+    func delete(_ path: String) async throws {
+        var request = URLRequest(url: baseURL.appending(path: path))
+        request.httpMethod = "DELETE"
+        _ = try await data(for: request)
+    }
+    
     /// 요청을 보내고 200번대 응답의 본문을 돌려준다
     /// access 토큰이 만료됐으면(UNAUTHORIZED) 재발급받아 한 번만 다시 보낸다
     private func data(for request: URLRequest, retrying: Bool = true) async throws -> Data {
@@ -59,7 +66,7 @@ struct APIClient {
         }
         return data
     }
-
+    
     /// refresh 토큰으로 새 토큰 두 개를 받아 저장한다 - 성공하면 true
     /// 실패(INVALID_REFRESH_TOKEN 등)하면 false를 돌려주고, 부른 쪽이 로그인 화면으로 보낸다
     private func reissue() async -> Bool {
@@ -81,7 +88,7 @@ struct APIClient {
             return false
         }
     }
-
+    
     /// 저장된 토큰이 있으면 Authorization: Bearer 헤더를 붙인다
     func authorized(_ request: URLRequest) -> URLRequest {
         guard let accessToken = tokenStore.load()?.accessToken else {
@@ -91,7 +98,7 @@ struct APIClient {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         return request
     }
-
+    
     /// 실패 응답을 에러로 - 서버 에러 형식이면 code까지, 아니면 상태 코드만
     static func error(statusCode: Int, data: Data) -> APIError {
         guard let body = try? JSONDecoder().decode(ErrorResponse.self, from: data) else {
@@ -99,14 +106,14 @@ struct APIClient {
         }
         return .server(statusCode: statusCode, code: body.code, message: body.message)
     }
-
+    
     /// 로그인이 풀렸다는 응답(UNAUTHORIZED)이면 토큰을 지우고 앱에 알린다
     func expireSessionIfNeeded(_ error: APIError) {
         guard case .server(_, code: "UNAUTHORIZED", _) = error else { return }
         tokenStore.clear()
         NotificationCenter.default.post(name: .sessionExpired, object: nil)
     }
-
+    
     /// 서버 날짜 해석
     nonisolated static func decodeServerDate(_ decoder: Decoder) throws -> Date {
         let container = try decoder.singleValueContainer()

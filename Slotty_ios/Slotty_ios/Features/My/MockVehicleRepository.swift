@@ -9,14 +9,25 @@ import Foundation
 
 /// 목 데이터로 동작하는 차량 저장소 - 같은 번호는 한 번만 등록된다
 final class MockVehicleRepository: VehicleRepository {
-    /// 등록된 차량번호 (공백 없이)
-    private var plateNumbers: Set<String> = ["12가3456", "90마2468"]
+    private var vehicles = [
+        RegisteredVehicle(id: 1, plateNumber: "12가3456", contactName: "김민준"),
+        RegisteredVehicle(id: 5, plateNumber: "90마2468", contactName: nil),
+    ]
+    
+    func fetchVehicles() async throws -> [RegisteredVehicle] {
+        vehicles
+    }
     
     func register(plateNumber: String) async throws {
-        guard !plateNumbers.contains(plateNumber) else {
+        guard !vehicles.contains(where: { $0.plateNumber == plateNumber }) else {
             throw VehicleError.plateDuplicated
         }
-        plateNumbers.insert(plateNumber)
+        let nextID = (vehicles.map(\.id).max() ?? 0) + 1
+        vehicles.append(RegisteredVehicle(id: nextID, plateNumber: plateNumber, contactName: "김민준"))
+    }
+    
+    func delete(vehicleId: Int) async throws {
+        vehicles.removeAll { $0.id == vehicleId }
     }
 }
 

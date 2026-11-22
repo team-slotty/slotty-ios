@@ -105,7 +105,11 @@ struct MyHomeView: View {
     private func menu(_ board: ParkingBoard) -> some View {
         let hasAssignedSpot = board.spots.contains { $0.isAssigned(to: board.myUnit) }
         return VStack(spacing: 0) {
-            menuRow("내 차량 관리")
+            menuRow("내 차량 관리") {
+                MyVehiclesView(viewModel: MyVehiclesViewModel(repository: vehicleRepository)) {
+                    await viewModel.load()
+                }
+            }
             if hasAssignedSpot {
                 Divider()
                 menuRow("가용시간")
@@ -119,12 +123,19 @@ struct MyHomeView: View {
         }
     }
     
-    /// 메뉴 한 줄 - 아직 만들지 않은 화면은 임시 화면으로 이동
+    /// 아직 만들지 않은 메뉴 - 임시 화면으로 이동
     private func menuRow(_ title: String) -> some View {
-        NavigationLink {
+        menuRow(title) {
             Text("\(title) 준비 중")
                 .font(SlottyFont.body)
                 .foregroundStyle(SlottyColor.secondary)
+        }
+    }
+    
+    /// 메뉴 한 줄 - 누르면 destination 화면으로 이동
+    private func menuRow<Destination: View>(_ title: String, @ViewBuilder destination: () -> Destination) -> some View {
+        NavigationLink {
+            destination()
         } label: {
             HStack {
                 Text(title)

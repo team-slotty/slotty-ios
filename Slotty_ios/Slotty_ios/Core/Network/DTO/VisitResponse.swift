@@ -63,3 +63,30 @@ struct AvailableSlotResponse: Decodable {
 struct FrequentVehicleResponse: Decodable {
     let plateNumber: String
 }
+
+/// 방문 상세 응답 - GET /api/visits/{id} (등록한 사람과 연락처)
+struct VisitDetailResponse: Decodable {
+    let registeredBy: UserRef?
+    let contact: Contact?
+    
+    struct Contact: Decodable {
+        /// 등록한 사람이 연락처 공개에 동의했을 때만 true
+        let canCall: Bool
+        let phone: String?
+    }
+    
+    func toDetail() -> VisitDetail {
+        VisitDetail(
+            registeredBy: registeredBy?.name,
+            phoneNumber: contact?.canCall == true ? contact?.phone : nil
+        )
+    }
+}
+
+/// 방문 수정 요청 - PATCH /api/visits/{id}
+struct VisitUpdateRequest: Encodable {
+    let plateNumber: String
+    let startAt: Date
+    let endAt: Date
+    let slotId: Int?
+}

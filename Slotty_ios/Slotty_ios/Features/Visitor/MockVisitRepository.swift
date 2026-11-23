@@ -59,4 +59,19 @@ final class MockVisitRepository: VisitRepository {
     func frequentPlateNumbers() async throws -> [String] {
         ["78마3456", "56바7890"]
     }
+    
+    func fetchDetail(visitID: String) async throws -> VisitDetail {
+        VisitDetail(registeredBy: "김민준", phoneNumber: "010-0000-0001")
+    }
+    
+    func update(visitID: String, plateNumber: String, startAt: Date, endAt: Date, spotNumber: Int?) async throws -> Visit {
+        guard let index = visits.firstIndex(where: { $0.id == visitID }) else {
+            throw VisitError.visitNotFound
+        }
+        guard visits[index].canDelete() else {
+            throw VisitError.alreadyStarted
+        }
+        visits[index] = Visit(id: visitID, plateNumber: plateNumber, startAt: startAt, endAt: endAt, spotNumber: spotNumber)
+        return visits[index]
+    }
 }

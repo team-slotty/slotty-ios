@@ -7,6 +7,14 @@
 
 import Foundation
 
+/// 방문 상세에서 더 보여 주는 정보
+struct VisitDetail: Equatable {
+    /// 등록한 사람 이름
+    let registeredBy: String?
+    /// 등록한 사람 전화번호, 연락처를 공개하지 않았으면 nil
+    let phoneNumber: String?
+}
+
 /// 우리 세대가 등록한 방문차량 한 건
 struct Visit: Identifiable, Equatable {
     let id: String

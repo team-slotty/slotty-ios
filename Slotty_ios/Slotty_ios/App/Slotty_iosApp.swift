@@ -38,7 +38,7 @@ struct Slotty_iosApp: App {
                 }
             } else {
                 loggedInContent
-                // 토큰이 없거나 만료되면 로그인 화면으로
+                // 토큰이 없거나 만료되면, 또는 로그아웃하면 로그인 화면으로
                     .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
                         isLoggedIn = false
                     }
@@ -64,7 +64,8 @@ struct Slotty_iosApp: App {
                 parkingViewModel: parkingViewModel,
                 searchRepository: Self.vehicleSearchRepository,
                 visitViewModel: visitViewModel,
-                vehicleRepository: Self.vehicleRepository
+                vehicleRepository: Self.vehicleRepository,
+                authRepository: Self.authRepository
             )
         }
     }

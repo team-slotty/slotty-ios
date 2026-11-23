@@ -106,9 +106,14 @@ struct Slotty_iosApp: App {
 #endif
         return LiveVehicleRepository()
     }
-    /// 서버에 검색 API가 생기기 전까지는 항상 목 저장소
+    /// 실행 인자에 -useMockData가 있으면 목 저장소, 없으면 서버 저장소 (Debug 빌드에서만)
     private static var vehicleSearchRepository: any VehicleSearchRepository {
-        MockVehicleSearchRepository()
+#if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-useMockData") {
+            return MockVehicleSearchRepository()
+        }
+#endif
+        return LiveVehicleSearchRepository()
     }
     /// 실행 인자에 -useMockData가 있으면 목 저장소, 없으면 서버 저장소 (Debug 빌드에서만)
     private static var authRepository: any AuthRepository {

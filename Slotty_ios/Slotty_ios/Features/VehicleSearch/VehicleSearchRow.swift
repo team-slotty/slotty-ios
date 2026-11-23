@@ -49,13 +49,15 @@ struct VehicleSearchRow: View {
         }
     }
     
-    /// 예: "입주민 · **가3456", "방문 · **마3456 · 오늘 14:00~18:00"
+    /// 예: "입주민 · **3456", "방문 · **3456 · 오늘 14:00~18:00" (방문 시간은 볼 권한이 있을 때만)
     private var subtitle: String {
         switch result.kind {
         case .resident:
             "입주민 · \(result.maskedPlateNumber)"
-        case let .visitor(start, end):
+        case let .visitor(start?, end?):
             "방문 · \(result.maskedPlateNumber) · 오늘 \(time(start))~\(time(end))"
+        case .visitor:
+            "방문 · \(result.maskedPlateNumber)"
         }
     }
     

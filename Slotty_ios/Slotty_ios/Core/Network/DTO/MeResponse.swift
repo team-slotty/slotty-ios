@@ -8,7 +8,7 @@
 import Foundation
 
 /// 내 정보 응답 - GET /api/me
-/// 세대 소속 여부, 빌라 이름, 연락처 공개를 쓴다 (관리자 여부는 필요할 때 추가)
+/// 세대 소속 여부, 빌라 이름, 연락처 공개를 쓴다
 struct MeResponse: Decodable {
     /// 소속 전이면 null
     let household: Household?

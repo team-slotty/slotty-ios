@@ -29,6 +29,20 @@ final class MockVehicleRepository: VehicleRepository {
     func delete(vehicleId: Int) async throws {
         vehicles.removeAll { $0.id == vehicleId }
     }
+    
+    private let members = [HouseholdMember(id: 1, name: "김민준"), HouseholdMember(id: 5, name: "이수진")]
+    
+    func fetchMembers() async throws -> [HouseholdMember] {
+        members
+    }
+    
+    func updateContact(vehicleId: Int, contactUserId: Int) async throws {
+        guard let index = vehicles.firstIndex(where: { $0.id == vehicleId }),
+              let member = members.first(where: { $0.id == contactUserId })
+        else { return }
+        let vehicle = vehicles[index]
+        vehicles[index] = RegisteredVehicle(id: vehicle.id, plateNumber: vehicle.plateNumber, contactName: member.name, contactUserId: member.id)
+    }
 }
 
 /// 차량 등록 중에 생길 수 있는 오류

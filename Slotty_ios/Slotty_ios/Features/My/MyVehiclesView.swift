@@ -14,6 +14,8 @@ struct MyVehiclesView: View {
     let onChanged: () async -> Void
     /// 삭제를 확인 중인 차량, 확인창이 닫혀 있으면 nil
     @State private var deletingVehicle: RegisteredVehicle?
+    /// 담당자를 고르는 중인 차량, 닫혀 있으면 nil
+    @State private var changingVehicle: RegisteredVehicle?
 
     init(viewModel: MyVehiclesViewModel, onChanged: @escaping () async -> Void) {
         _viewModel = State(initialValue: viewModel)
@@ -73,9 +75,34 @@ struct MyVehiclesView: View {
         } message: { _ in
             Text("주차 중이면 주차 기록도 지워지고 면이 빈 면이 돼요")
         }
+        .confirmationDialog(
+            "\(changingVehicle?.plateNumber ?? "") 연락 담당자",
+            isPresented: isChoosingContact,
+            titleVisibility: .visible,
+            presenting: changingVehicle
+        ) { vehicle in
+            ForEach(viewModel.members) { member in
+                Button(member.id == vehicle.contactUserId ? "\(member.name) (지금 담당자)" : member.name) {
+                    Task { await viewModel.changeContact(of: vehicle, to: member) }
+                }
+            }
+        }
         .task {
             await viewModel.load()
+            await viewModel.loadMembers()
         }
+    }
+
+    /// 담당자 고르기 창을 띄울지 - 닫히면 고른 차량을 지운다
+    private var isChoosingContact: Binding<Bool> {
+        Binding(
+            get: { changingVehicle != nil },
+            set: { isShowing in
+                if !isShowing {
+                    changingVehicle = nil
+                }
+            }
+        )
     }
 
     /// 확인창을 띄울지 - 닫히면 고른 차량을 지운다
@@ -102,6 +129,11 @@ struct MyVehiclesView: View {
                     .foregroundStyle(SlottyColor.secondary)
             }
             Spacer()
+            Button("담당자") {
+                changingVehicle = vehicle
+            }
+            .font(SlottyFont.body)
+            .foregroundStyle(SlottyColor.primary)
             Button("삭제") {
                 deletingVehicle = vehicle
             }

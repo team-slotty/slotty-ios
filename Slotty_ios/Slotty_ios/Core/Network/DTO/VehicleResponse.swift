@@ -28,6 +28,21 @@ struct VehicleResponse: Decodable {
 extension VehicleResponse {
     /// 앱 모델로 변환
     func toRegisteredVehicle() -> RegisteredVehicle {
-        RegisteredVehicle(id: vehicleId, plateNumber: plateNumber, contactName: contactUser?.name)
+        RegisteredVehicle(id: vehicleId, plateNumber: plateNumber, contactName: contactUser?.name, contactUserId: contactUser?.userId)
+    }
+}
+
+/// 차량 수정 요청 - PATCH /api/vehicles/{id} (보낸 필드만 바뀐다)
+struct VehicleUpdateRequest: Encodable {
+    let contactUserId: Int
+}
+
+/// 내 세대 응답 - GET /api/households/me (세대원 이름만 쓴다)
+struct MyHouseholdResponse: Decodable {
+    let members: [Member]
+    
+    struct Member: Decodable {
+        let userId: Int
+        let name: String
     }
 }

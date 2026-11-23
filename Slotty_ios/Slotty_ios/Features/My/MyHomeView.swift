@@ -15,6 +15,8 @@ struct MyHomeView: View {
     let vehicleRepository: any VehicleRepository
     /// 설정의 로그아웃에 쓰는 저장소
     let authRepository: any AuthRepository
+    /// 설정의 연락처 공개, 탈퇴에 쓰는 저장소
+    let accountRepository: any AccountRepository
     
     var body: some View {
         Group {
@@ -118,7 +120,7 @@ struct MyHomeView: View {
             }
             Divider()
             menuRow("설정") {
-                SettingsView(authRepository: authRepository)
+                SettingsView(authRepository: authRepository, accountRepository: accountRepository)
             }
         }
         .overlay {
@@ -159,7 +161,10 @@ struct MyHomeView: View {
 #Preview {
     let viewModel = ParkingHomeViewModel(repository: MockParkingRepository())
     NavigationStack {
-        MyHomeView(viewModel: viewModel, vehicleRepository: MockVehicleRepository(), authRepository: MockAuthRepository())
+        MyHomeView(viewModel: viewModel,
+                   vehicleRepository: MockVehicleRepository(),
+                   authRepository: MockAuthRepository(),
+                   accountRepository: MockAccountRepository())
     }
     .task { await viewModel.load() }
 }

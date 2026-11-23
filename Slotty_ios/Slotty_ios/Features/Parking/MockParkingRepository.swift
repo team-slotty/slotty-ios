@@ -76,6 +76,11 @@ final class MockParkingRepository: ParkingRepository {
         return board
     }
     
+    /// 목 저장소는 출차처럼 면을 비운다
+    func markLeft(spotNumber: Int) async throws -> ParkingBoard {
+        try await exit(spotNumber: spotNumber)
+    }
+    
     func markAsMine(spotNumber: Int, vehicle: Vehicle) async throws -> ParkingBoard {
         guard let index = board.spots.firstIndex(where: { $0.number == spotNumber }) else {
             throw ParkingError.spotNotFound

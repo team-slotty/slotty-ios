@@ -15,23 +15,25 @@ import Testing
 struct CheckOutTests {
     private let host = "checkout.test"
     private let options = #"{ "mode": "AUTO", "vehicles": [{ "vehicleId": 1, "plateNumber": "12가3456", "slotId": 1, "slotLabel": "1번", "enteredAt": "2026-11-20T18:30:06" }], "suggestedVehicleId": 1 }"#
-    private let board = #"{ "villaName": "슬로티빌라", "slots": [] }"#
+    private let board = #"{ "slots": [] }"#
     private let myVehicles = #"{ "unitNumber": "101", "vehicles": [] }"#
+    private let me = #"{ "household": { "unitNumber": "101" }, "villa": { "name": "슬로티빌라" } }"#
     
     private func makeRepository() -> LiveParkingRepository {
         let client = APIClient(baseURL: URL(string: "http://\(host)")!, session: StubURLProtocol.makeSession(), tokenStore: InMemoryTokenStore())
         return LiveParkingRepository(client: client)
     }
     
-    /// 출차 요청에 줄 응답만 바꾸고, 나머지(옵션, 현황판, 내 차량)는 정상 응답
+    /// 출차 요청에 줄 응답만 바꾸고, 나머지(옵션, 현황판, 내 차량, 내 정보)는 정상 응답
     private func stub(checkOut: (Int, String)) {
-        let (options, board, myVehicles) = (options, board, myVehicles)
+        let (options, board, myVehicles, me) = (options, board, myVehicles, me)
         StubURLProtocol.handlers[host] = { request in
             switch request.url?.path {
             case "/api/parking/check-out-options": return (200, options)
             case "/api/parking/check-out": return checkOut
-            case "/api/board": return (200, board)
+            case "/api/parking-board": return (200, board)
             case "/api/vehicles/me": return (200, myVehicles)
+            case "/api/me": return (200, me)
             default: return (404, "")
             }
         }

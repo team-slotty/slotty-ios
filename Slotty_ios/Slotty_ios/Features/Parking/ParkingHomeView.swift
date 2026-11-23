@@ -110,7 +110,7 @@ struct ParkingHomeView: View {
                 canMarkLeft: canMarkLeft(at: spot, in: board),
                 onMarkLeft: {
                     selectedSpot = nil
-                    Task { await viewModel.exit(spotNumber: spot.number) }
+                    Task { await viewModel.markLeft(spotNumber: spot.number) }
                 },
                 canMarkAsMine: canMarkLeft(at: spot, in: board),
                 onMarkAsMine: {

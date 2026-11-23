@@ -19,6 +19,9 @@ struct ParkingActionErrorTests {
         func enter(vehicle: Vehicle, spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }
         func exit(spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }
         func recordUnidentified(spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }
+        func markLeft(spotNumber: Int) async throws -> ParkingBoard {
+            throw ParkingError.notSupported
+        }
         func markAsMine(spotNumber: Int, vehicle: Vehicle) async throws -> ParkingBoard { throw ParkingError.notSupported }
     }
     

@@ -72,7 +72,17 @@ final class ParkingHomeViewModel {
             board = try await repository.recordUnidentified(spotNumber: spotNumber)
             errorMessage = nil
         } catch {
-            errorMessage = "기록하지 못했어요"
+            errorMessage = (error as? APIError)?.serverMessage ?? "기록하지 못했어요"
+        }
+    }
+    
+    /// 차량 떠남 - 미확인 기록을 풀고 현황판을 바뀐 상태로 교체
+    func markLeft(spotNumber: Int) async {
+        do {
+            board = try await repository.markLeft(spotNumber: spotNumber)
+            errorMessage = nil
+        } catch {
+            errorMessage = (error as? APIError)?.serverMessage ?? "처리하지 못했어요"
         }
     }
     
@@ -82,7 +92,7 @@ final class ParkingHomeViewModel {
             board = try await repository.markAsMine(spotNumber: spotNumber, vehicle: vehicle)
             errorMessage = nil
         } catch {
-            errorMessage = "바로잡지 못했어요"
+            errorMessage = (error as? APIError)?.serverMessage ?? "바로잡지 못했어요"
         }
     }
 }

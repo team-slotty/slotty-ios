@@ -35,4 +35,15 @@ struct VillaRepositoryTests {
         
         #expect(methods.values == ["PUT /api/villas/me/admin"])
     }
+    
+    @Test func 면_배정에서_공용_면은_세대를_보내지_않는다() throws {
+        let request = SlotAssignmentRequest(assignments: [.init(slotId: 1, householdId: 1), .init(slotId: 6, householdId: nil)])
+        
+        let data = try JSONEncoder().encode(request)
+        let json = try #require(JSONSerialization.jsonObject(with: data) as? [String: [[String: Int]]])
+        
+        #expect(json["assignments"]?[0]["householdId"] == 1)
+        // 세대 id가 없으면 서버가 공용으로 본다
+        #expect(json["assignments"]?[1]["householdId"] == nil)
+    }
 }

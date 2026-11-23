@@ -12,6 +12,8 @@ struct VillaSettingsView: View {
     let repository: any VillaRepository
     /// 관리자로 넘길 수 있는 입주민 (관리자 본인 제외)
     let candidates: [AdminHousehold.Member]
+    /// 면 배정에서 고를 수 있는 세대
+    let households: [AdminHousehold]
     /// 관리자를 넘겼을 때 - 관리 탭을 닫는다
     let onAdminDelegated: () -> Void
     
@@ -54,9 +56,15 @@ struct VillaSettingsView: View {
                         }
                     }
                 }
-                Section {
+                Section("주차장") {
                     LabeledContent("주차면", value: "\(villa.slotCount)면")
                     LabeledContent("세대", value: "\(villa.householdCount)세대")
+                    NavigationLink("배치 변경") {
+                        LayoutEditView(repository: repository, villa: villa) { await load() }
+                    }
+                    NavigationLink("면 배정") {
+                        SlotAssignmentView(repository: repository, households: households)
+                    }
                 }
             }
         }
@@ -122,6 +130,6 @@ struct VillaSettingsView: View {
 
 #Preview {
     NavigationStack {
-        VillaSettingsView(repository: MockVillaRepository(), candidates: [.init(id: 2, name: "이서연", isAdmin: false)]) {}
+        VillaSettingsView(repository: MockVillaRepository(), candidates: [.init(id: 2, name: "이서연", isAdmin: false)], households: []) {}
     }
 }

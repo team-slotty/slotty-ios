@@ -47,7 +47,12 @@ struct VisitListView: View {
                 loadFrequentPlates: { await viewModel.frequentPlateNumbers() },
                 failureMessage: viewModel.actionErrorMessage
             ) { form in
-                await viewModel.register(form)
+                let isRegistered = await viewModel.register(form)
+                // 방금 등록한 방문이 보이는 탭으로 - 지금부터 시작하면 방문 중
+                if isRegistered, let visit = viewModel.visits?.last {
+                    filter = VisitFilter(status: visit.status())
+                }
+                return isRegistered
             }
         }
         .sheet(item: $selectedVisit) { visit in

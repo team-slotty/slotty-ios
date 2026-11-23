@@ -15,6 +15,15 @@ enum VisitFilter: CaseIterable, Identifiable {
     
     var id: Self { self }
     
+    /// 이 상태가 들어가는 구분 - 방금 등록한 방문을 보여 줄 탭을 고를 때
+    init(status: VisitStatus) {
+        switch status {
+        case .scheduled: self = .scheduled
+        case .visiting, .needsCheck: self = .visiting
+        case .ended: self = .ended
+        }
+    }
+    
     /// 화면에 보여줄 이름
     var label: String {
         switch self {

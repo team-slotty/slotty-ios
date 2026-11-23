@@ -26,4 +26,15 @@ struct MyVehiclesViewModelTests {
         #expect(await viewModel.delete(vehicle))
         #expect(viewModel.vehicles?.contains(vehicle) == false)
     }
+    
+    @Test func 담당자를_바꾼다() async throws {
+        await viewModel.load()
+        await viewModel.loadMembers()
+        let vehicle = try #require(viewModel.vehicles?.first { $0.contactName == nil })
+        let member = try #require(viewModel.members.last)
+        
+        await viewModel.changeContact(of: vehicle, to: member)
+        
+        #expect(viewModel.vehicles?.first { $0.id == vehicle.id }?.contactName == member.name)
+    }
 }

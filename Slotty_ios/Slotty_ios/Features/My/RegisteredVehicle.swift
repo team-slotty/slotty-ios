@@ -15,4 +15,12 @@ struct RegisteredVehicle: Identifiable, Equatable {
     let plateNumber: String
     /// 연락 담당자 이름, 지정 전이면 nil
     let contactName: String?
+    /// 연락 담당자 id - 담당자 바꾸기에서 지금 담당자를 표시할 때 쓴다
+    var contactUserId: Int? = nil
+}
+
+/// 우리 세대원 - 차량 연락 담당자 후보
+struct HouseholdMember: Identifiable, Equatable {
+    let id: Int
+    let name: String
 }

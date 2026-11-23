@@ -15,6 +15,8 @@ final class MyVehiclesViewModel {
     private(set) var vehicles: [RegisteredVehicle]?
     /// 화면에 띄울 오류 문구 - 없으면 nil
     private(set) var errorMessage: String?
+    /// 담당자로 고를 수 있는 세대원
+    private(set) var members: [HouseholdMember] = []
     
     let repository: any VehicleRepository
     
@@ -29,6 +31,21 @@ final class MyVehiclesViewModel {
             errorMessage = nil
         } catch {
             errorMessage = (error as? APIError)?.serverMessage ?? "차량 목록을 불러오지 못했어요"
+        }
+    }
+    
+    /// 세대원 불러오기 - 못 불러오면 담당자 바꾸기 목록이 비어 있다
+    func loadMembers() async {
+        members = (try? await repository.fetchMembers()) ?? []
+    }
+    
+    /// 담당자 바꾸기 - 성공하면 목록을 다시 불러온다
+    func changeContact(of vehicle: RegisteredVehicle, to member: HouseholdMember) async {
+        do {
+            try await repository.updateContact(vehicleId: vehicle.id, contactUserId: member.id)
+            await load()
+        } catch {
+            errorMessage = (error as? APIError)?.serverMessage ?? "담당자를 바꾸지 못했어요"
         }
     }
     

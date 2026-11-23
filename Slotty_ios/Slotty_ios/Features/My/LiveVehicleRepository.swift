@@ -29,4 +29,17 @@ struct LiveVehicleRepository: VehicleRepository {
     func delete(vehicleId: Int) async throws {
         try await client.delete("/api/vehicles/\(vehicleId)")
     }
+    
+    func fetchMembers() async throws -> [HouseholdMember] {
+        let response: MyHouseholdResponse = try await client.get("/api/households/me")
+        return response.members.map { HouseholdMember(id: $0.userId, name: $0.name) }
+    }
+    
+    /// 담당자만 보내서 차량번호는 그대로 둔다
+    func updateContact(vehicleId: Int, contactUserId: Int) async throws {
+        let _: VehicleResponse = try await client.patch(
+            "/api/vehicles/\(vehicleId)",
+            body: VehicleUpdateRequest(contactUserId: contactUserId)
+        )
+    }
 }

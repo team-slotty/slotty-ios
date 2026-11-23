@@ -30,6 +30,12 @@ final class MockHouseholdRepository: HouseholdRepository {
         myUnit = unit
         return unit
     }
+    
+    func createVilla(_ request: VillaCreateRequest) async throws -> VillaCreateResult {
+        myUnit = request.myUnitNumber
+        let codes = request.households.map { VillaCreateResult.InviteCode(unitNumber: $0.unitNumber, code: "NEW\($0.unitNumber)CODE") }
+        return VillaCreateResult(geocodeFailed: false, inviteCodes: codes)
+    }
 }
 
 /// 세대 참여 중에 생길 수 있는 오류

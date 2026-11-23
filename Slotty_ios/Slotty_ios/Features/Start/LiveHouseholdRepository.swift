@@ -26,4 +26,9 @@ struct LiveHouseholdRepository: HouseholdRepository {
         let response: JoinHouseholdResponse = try await client.post("/api/households/join", body: request)
         return response.household.unitNumber
     }
+    
+    func createVilla(_ request: VillaCreateRequest) async throws -> VillaCreateResult {
+        let response: VillaCreateResponse = try await client.post("/api/villas", body: request)
+        return response.toResult()
+    }
 }

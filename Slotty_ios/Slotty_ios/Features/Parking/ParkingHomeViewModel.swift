@@ -11,6 +11,12 @@ import Observation
 /// 홈 (주차 현황판) 화면의 상태와 동작
 @Observable
 final class ParkingHomeViewModel {
+    /// 현황판이 바뀔 때마다 다시 불러온다 - 화면이 떠 있는 동안 계속
+    func watchBoardChanges() async {
+        for await _ in repository.boardChanges() {
+            await load()
+        }
+    }
     /// 현황판 데이터 - 불러오기 전에는 nil
     private(set) var board: ParkingBoard?
     /// 화면에 띄울 오류 문구 - 없으면 nil

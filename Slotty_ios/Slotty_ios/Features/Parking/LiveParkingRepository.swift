@@ -15,6 +15,26 @@ struct LiveParkingRepository: ParkingRepository {
         self.client = client
     }
     
+    /// 현황판 실시간 알림(SSE) - 끊기면(서버 30분 만료, 네트워크) 3초 뒤 다시 연결
+    func boardChanges() -> AsyncStream<Void> {
+        AsyncStream { continuation in
+            let task = Task {
+                while !Task.isCancelled {
+                    do {
+                        for try await name in client.eventNames("/api/parking-board/stream") where name == "board-changed" {
+                            continuation.yield()
+                        }
+                    } catch {
+                        // 끊긴 이유와 상관없이 잠시 뒤 다시 연결한다
+                    }
+                    try? await Task.sleep(for: .seconds(3))
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+    
     /// 현황판과 내 차량을 차례로 불러와 합친다
     func fetchBoard() async throws -> ParkingBoard {
         let board: ParkingBoardResponse = try await client.get("/api/parking-board")

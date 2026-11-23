@@ -14,6 +14,8 @@ import Testing
 struct ParkingActionErrorTests {
     /// 모든 동작이 실패하는 테스트용 저장소
     private final class FailingParkingRepository: ParkingRepository {
+        func boardChanges() -> AsyncStream<Void> { AsyncStream { $0.finish() }
+        }
         func fetchBoard() async throws -> ParkingBoard { throw ParkingError.notSupported }
         func checkInOptions() async throws -> CheckInOptions { throw ParkingError.notSupported }
         func fetchSpotDetail(number: Int) async throws -> SpotDetail {

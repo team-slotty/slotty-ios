@@ -9,6 +9,8 @@ import Foundation
 
 /// 주차 현황을 불러오고 입출차를 기록하는 약속
 protocol ParkingRepository {
+    /// 현황판이 바뀔 때마다 알림 - 다른 세대가 입출차하면 다시 불러온다
+    func boardChanges() -> AsyncStream<Void>
     /// 현황판 불러오기
     func fetchBoard() async throws -> ParkingBoard
     /// 면 상세 - 가용시간과 지정된 방문

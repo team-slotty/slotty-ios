@@ -124,8 +124,13 @@ struct Slotty_iosApp: App {
 #endif
         return LiveAuthRepository()
     }
-    /// 서버에 방문 API가 생기기 전까지는 항상 목 저장소
+    /// 실행 인자에 -useMockData가 있으면 목 저장소, 없으면 서버 저장소 (Debug 빌드에서만)
     private static var visitRepository: any VisitRepository {
-        MockVisitRepository()
+#if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-useMockData") {
+            return MockVisitRepository()
+        }
+#endif
+        return LiveVisitRepository()
     }
 }

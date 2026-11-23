@@ -16,6 +16,8 @@ struct MeResponse: Decodable {
     let villa: Villa?
     /// 차량번호 검색 시 연락처 공개 - 설정 화면에서만 써서 없어도 해석되게 옵셔널
     let phonePublic: Bool?
+    /// 빌라 관리자인지 - 관리 탭을 보일지 정한다
+    let isAdmin: Bool?
     
     struct Household: Decodable {
         let unitNumber: String

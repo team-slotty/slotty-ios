@@ -21,6 +21,7 @@ struct APIClient {
         self.session = session
         self.tokenStore = tokenStore
         decoder.dateDecodingStrategy = .custom(Self.decodeServerDate)
+        encoder.dateEncodingStrategy = .custom(Self.encodeServerDate)
     }
     
     /// GET 요청을 보내고 응답 JSON을 원하는 타입으로 변환 - query는 주소 뒤 ?이름=값으로 붙는다
@@ -125,6 +126,14 @@ struct APIClient {
         guard case .server(_, code: "UNAUTHORIZED", _) = error else { return }
         tokenStore.clear()
         NotificationCenter.default.post(name: .sessionExpired, object: nil)
+    }
+    
+    /// 서버로 보내는 날짜 - 한국 시각에 +09:00을 붙인다 (예: 2026-11-23T14:00:00+09:00)
+    nonisolated static func encodeServerDate(_ date: Date, _ encoder: Encoder) throws {
+        let formatter = ISO8601DateFormatter()
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        var container = encoder.singleValueContainer()
+        try container.encode(formatter.string(from: date))
     }
     
     /// 서버 날짜 해석

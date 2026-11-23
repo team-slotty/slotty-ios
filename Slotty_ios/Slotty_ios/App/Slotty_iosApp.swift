@@ -18,6 +18,8 @@ struct Slotty_iosApp: App {
     @State private var isLoggedIn = false
     /// 세대에 소속됐는지 - 로그인할 때마다 내 정보로 다시 확인, 확인 전이면 nil
     @State private var hasHousehold: Bool?
+    /// 빌라 도착 알림 - 세대에 소속되면 예약, 로그인이 풀리면 지운다
+    @State private var arrivalNotifier = ArrivalNotifier()
     
     var body: some Scene {
         WindowGroup {
@@ -41,6 +43,8 @@ struct Slotty_iosApp: App {
                 // 토큰이 없거나 만료되면, 또는 로그아웃하면 로그인 화면으로
                     .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
                         isLoggedIn = false
+                        // 다른 계정으로 로그인할 수 있어서 이 빌라의 도착 알림은 지운다
+                        arrivalNotifier.cancel()
                     }
             }
         }
@@ -72,7 +76,14 @@ struct Slotty_iosApp: App {
                 adminRepository: Self.adminRepository,
                 villaRepository: Self.villaRepository
             )
+            .task { await scheduleArrivalNotification() }
         }
+    }
+    
+    /// 빌라 기준점으로 도착 알림 예약 - 기준점이 없거나 권한이 없으면 예약하지 않는다
+    private func scheduleArrivalNotification() async {
+        guard let anchor = try? await Self.householdRepository.fetchVillaAnchor() else { return }
+        await arrivalNotifier.schedule(latitude: anchor.latitude, longitude: anchor.longitude)
     }
     
     /// 내 정보로 세대 소속 확인 - 확인에 실패하면 메인 탭으로 보내고, 홈의 오류 안내와 새로고침에 맡긴다

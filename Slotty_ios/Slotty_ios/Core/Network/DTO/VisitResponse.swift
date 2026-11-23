@@ -51,3 +51,15 @@ extension VisitResponse {
         )
     }
 }
+
+/// 방문 지정 가능 면 - GET /api/visits/available-slots
+struct AvailableSlotResponse: Decodable {
+    /// 면 id - 현황판의 면 번호와 같다
+    let slotId: Int
+    let label: String
+}
+
+/// 자주 오는 차 - GET /api/frequent-vehicles
+struct FrequentVehicleResponse: Decodable {
+    let plateNumber: String
+}

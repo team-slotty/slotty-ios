@@ -42,4 +42,20 @@ struct LiveVisitRepository: VisitRepository {
     func delete(visitID: String) async throws {
         try await client.delete("/api/visits/\(visitID)")
     }
+    
+    func availableSpotNumbers(startAt: Date, endAt: Date) async throws -> [Int] {
+        let response: [AvailableSlotResponse] = try await client.get(
+            "/api/visits/available-slots",
+            query: [
+                URLQueryItem(name: "startAt", value: APIClient.serverDateString(startAt)),
+                URLQueryItem(name: "endAt", value: APIClient.serverDateString(endAt)),
+            ]
+        )
+        return response.map(\.slotId)
+    }
+    
+    func frequentPlateNumbers() async throws -> [String] {
+        let response: [FrequentVehicleResponse] = try await client.get("/api/frequent-vehicles")
+        return response.map(\.plateNumber)
+    }
 }

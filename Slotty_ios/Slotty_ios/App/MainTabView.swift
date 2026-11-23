@@ -31,10 +31,7 @@ struct MainTabView: View {
             }
             Tab("방문차량", systemImage: "car.2") {
                 NavigationStack {
-                    VisitListView(
-                        viewModel: visitViewModel,
-                        spotOptions: parkingViewModel.board?.visitorSpotNumbers ?? []
-                    )
+                    VisitListView(viewModel: visitViewModel)
                 }
             }
             Tab("마이", systemImage: "person") {

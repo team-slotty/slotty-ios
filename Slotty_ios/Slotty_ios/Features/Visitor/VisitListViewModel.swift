@@ -16,6 +16,9 @@ final class VisitListViewModel {
     /// 화면에 띄울 오류 문구 - 없으면 nil
     private(set) var errorMessage: String?
     
+    /// 등록/종료/삭제가 실패한 이유 - 서버가 보낸 문구, 없으면 nil (화면은 공통 문구를 쓴다)
+    private(set) var actionErrorMessage: String?
+    
     private let repository: any VisitRepository
     
     init(repository: any VisitRepository) {
@@ -42,8 +45,10 @@ final class VisitListViewModel {
                 spotNumber: form.spotNumber
             )
             visits = (visits ?? []) + [visit]
+            actionErrorMessage = nil
             return true
         } catch {
+            actionErrorMessage = (error as? APIError)?.serverMessage
             return false
         }
     }
@@ -53,8 +58,10 @@ final class VisitListViewModel {
         do {
             let ended = try await repository.end(visitID: visit.id)
             visits = visits?.map { $0.id == ended.id ? ended : $0 }
+            actionErrorMessage = nil
             return true
         } catch {
+            actionErrorMessage = (error as? APIError)?.serverMessage
             return false
         }
     }
@@ -64,10 +71,22 @@ final class VisitListViewModel {
         do {
             try await repository.delete(visitID: visit.id)
             visits?.removeAll { $0.id == visit.id }
+            actionErrorMessage = nil
             return true
         } catch {
+            actionErrorMessage = (error as? APIError)?.serverMessage
             return false
         }
+    }
+    
+    /// 그 시간에 지정할 수 있는 면 - 못 불러오면 빈 목록 (면 없이 등록은 가능)
+    func availableSpotNumbers(startAt: Date, endAt: Date) async -> [Int] {
+        (try? await repository.availableSpotNumbers(startAt: startAt, endAt: endAt)) ?? []
+    }
+    
+    /// 자주 오는 차량번호 - 못 불러오면 빈 목록
+    func frequentPlateNumbers() async -> [String] {
+        (try? await repository.frequentPlateNumbers()) ?? []
     }
     
     /// 홈 "오늘 방문 예정" - 빠른 순

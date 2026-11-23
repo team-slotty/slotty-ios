@@ -47,6 +47,11 @@ final class ParkingHomeViewModel {
         }
     }
     
+    /// 면 상세 - 못 불러오면 nil (기본 정보만 보인다)
+    func spotDetail(number: Int) async -> SpotDetail? {
+        try? await repository.fetchSpotDetail(number: number)
+    }
+    
     /// 입차할 때 고를 수 있는 면 - 못 불러오면 nil (입차 화면에서 안내)
     func checkInOptions() async -> CheckInOptions? {
         try? await repository.checkInOptions()

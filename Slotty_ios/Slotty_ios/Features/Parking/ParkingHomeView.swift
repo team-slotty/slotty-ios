@@ -115,7 +115,8 @@ struct ParkingHomeView: View {
                 canMarkAsMine: canMarkLeft(at: spot, in: board),
                 onMarkAsMine: {
                     markAsMine(spot, in: board)
-                }
+                },
+                loadDetail: { await viewModel.spotDetail(number: spot.number) }
             )
             .presentationDetents([.medium])
         }
@@ -140,7 +141,11 @@ struct ParkingHomeView: View {
             VisitDetailView(
                 visit: visit,
                 onEnd: { await visitViewModel.end(visit) },
-                onDelete: { await visitViewModel.delete(visit) }
+                onDelete: { await visitViewModel.delete(visit) },
+                failureMessage: visitViewModel.actionErrorMessage,
+                loadDetail: { await visitViewModel.detail(of: visit) },
+                onUpdate: { await visitViewModel.update(visit, with: $0) },
+                loadSpotOptions: { await visitViewModel.availableSpotNumbers(startAt: $0, endAt: $1) }
             )
             .presentationDetents([.medium])
         }

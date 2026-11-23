@@ -21,4 +21,8 @@ protocol VisitRepository {
     func availableSpotNumbers(startAt: Date, endAt: Date) async throws -> [Int]
     /// 우리 세대에 자주 오는 방문 차량번호 - 최근 순
     func frequentPlateNumbers() async throws -> [String]
+    /// 방문 상세 - 등록한 사람과 연락처
+    func fetchDetail(visitID: String) async throws -> VisitDetail
+    /// 수정: 시작 전 방문만 바꿀 수 있다, 바뀐 방문을 돌려준다
+    func update(visitID: String, plateNumber: String, startAt: Date, endAt: Date, spotNumber: Int?) async throws -> Visit
 }

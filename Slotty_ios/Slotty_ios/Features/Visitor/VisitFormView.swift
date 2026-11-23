@@ -15,6 +15,11 @@ struct VisitFormView: View {
     let loadFrequentPlates: () async -> [String]
     /// 등록이 실패했을 때 보여 줄 서버 문구, 없으면 공통 문구
     var failureMessage: String? = nil
+    /// 수정할 때 처음 채워 둘 값, 등록이면 nil
+    var initialForm: VisitForm? = nil
+    /// 화면 제목과 완료 버튼 - 등록/수정에서 다르게 쓴다
+    var title = "방문차량 등록"
+    var submitTitle = "등록"
     /// 등록 - 성공하면 true
     let onRegister: (VisitForm) async -> Bool
     
@@ -26,6 +31,8 @@ struct VisitFormView: View {
     @State private var frequentPlates: [String] = []
     @State private var isRegistering = false
     @State private var failed = false
+    /// 처음 값을 한 번만 채우기 위한 표시 - 다시 나타날 때 입력한 값을 덮지 않게
+    @State private var hasAppliedInitialForm = false
     
     var body: some View {
         NavigationStack {
@@ -74,14 +81,20 @@ struct VisitFormView: View {
             .task(id: [form.startAt, form.endAt]) {
                 await reloadSpotOptions()
             }
-            .navigationTitle("방문차량 등록")
+            .onAppear {
+                if let initialForm, !hasAppliedInitialForm {
+                    form = initialForm
+                    hasAppliedInitialForm = true
+                }
+            }
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("취소") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("등록") {
+                    Button(submitTitle) {
                         Task { await register() }
                     }
                     .disabled(form.problem != nil || isRegistering)

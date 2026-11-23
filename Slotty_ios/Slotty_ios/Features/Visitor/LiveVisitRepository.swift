@@ -58,4 +58,16 @@ struct LiveVisitRepository: VisitRepository {
         let response: [FrequentVehicleResponse] = try await client.get("/api/frequent-vehicles")
         return response.map(\.plateNumber)
     }
+    
+    func fetchDetail(visitID: String) async throws -> VisitDetail {
+        let response: VisitDetailResponse = try await client.get("/api/visits/\(visitID)")
+        return response.toDetail()
+    }
+    
+    /// 보낸 필드만 바뀌어서 화면의 값을 모두 보낸다
+    func update(visitID: String, plateNumber: String, startAt: Date, endAt: Date, spotNumber: Int?) async throws -> Visit {
+        let request = VisitUpdateRequest(plateNumber: plateNumber, startAt: startAt, endAt: endAt, slotId: spotNumber)
+        let response: VisitResponse = try await client.patch("/api/visits/\(visitID)", body: request)
+        return response.toVisit()
+    }
 }

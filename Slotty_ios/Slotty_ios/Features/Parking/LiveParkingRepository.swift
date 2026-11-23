@@ -27,6 +27,11 @@ struct LiveParkingRepository: ParkingRepository {
         )
     }
     
+    func fetchSpotDetail(number: Int) async throws -> SpotDetail {
+        let response: SlotDetailResponse = try await client.get("/api/parking-slots/\(number)")
+        return response.toDetail()
+    }
+    
     func checkInOptions() async throws -> CheckInOptions {
         let response: CheckInOptionsResponse = try await client.get("/api/parking/check-in-options")
         return response.toOptions()

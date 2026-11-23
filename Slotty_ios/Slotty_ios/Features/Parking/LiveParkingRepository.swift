@@ -63,13 +63,36 @@ struct LiveParkingRepository: ParkingRepository {
         return try await fetchBoard()
     }
     
+    /// 미확인 차량 기록 - 차량번호는 몰라도 되어서 면만 보낸다
     func recordUnidentified(spotNumber: Int) async throws -> ParkingBoard {
-        // 서버에 미확인 기록 API가 아직 없음
-        throw ParkingError.notSupported
+        try await client.post("/api/unidentified-reports", body: UnidentifiedReportRequest(slotId: spotNumber))
+        return try await fetchBoard()
     }
     
+    /// [차량 떠남] - 그 면의 미확인 기록을 푼다
+    func markLeft(spotNumber: Int) async throws -> ParkingBoard {
+        let reportId = try await unidentifiedReportId(at: spotNumber)
+        try await client.post("/api/unidentified-reports/\(reportId)/resolve", body: EmptyBody())
+        return try await fetchBoard()
+    }
+    
+    /// [내 차예요] - 미확인 면의 차를 우리 세대 차로 바로잡는다 (입차처럼 탭 한 번에 id 하나)
     func markAsMine(spotNumber: Int, vehicle: Vehicle) async throws -> ParkingBoard {
-        // 서버에 바로잡기 API가 아직 없음
-        throw ParkingError.notSupported
+        guard let vehicleId = Int(vehicle.id) else {
+            throw ParkingError.vehicleNotFound
+        }
+        let reportId = try await unidentifiedReportId(at: spotNumber)
+        let request = MarkAsMineRequest(vehicleId: vehicleId, clientRequestId: UUID().uuidString)
+        try await client.post("/api/unidentified-reports/\(reportId)/mine", body: request)
+        return try await fetchBoard()
+    }
+    
+    /// 그 면의 미확인 기록 id - 현황판을 새로 받아 찾는다 (앱 모델은 저장소마다 따로라 서버에서 다시 확인)
+    private func unidentifiedReportId(at spotNumber: Int) async throws -> Int {
+        let board: ParkingBoardResponse = try await client.get("/api/parking-board")
+        guard let reportId = board.slots.first(where: { $0.slotId == spotNumber })?.unidentifiedReportId else {
+            throw ParkingError.notUnconfirmed
+        }
+        return reportId
     }
 }

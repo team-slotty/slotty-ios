@@ -10,7 +10,7 @@ import SwiftUI
 /// 0-4 시작 방법 선택 - 세대에 소속되기 전에 보는 화면
 struct StartChoiceView: View {
     let householdRepository: any HouseholdRepository
-    /// 초대 코드로 참여를 마쳤을 때
+    /// 초대 코드로 참여했거나 빌라를 만들었을 때
     let onJoined: () -> Void
     
     var body: some View {
@@ -25,8 +25,12 @@ struct StartChoiceView: View {
                 choiceRow(title: "초대 코드로 참여", subtitle: "이미 등록된 빌라의 세대원이에요")
             }
             .buttonStyle(.plain)
-            choiceRow(title: "빌라 만들기", subtitle: "준비 중이에요")
-                .opacity(0.4)
+            NavigationLink {
+                VillaCreateView(repository: householdRepository, onCreated: onJoined)
+            } label: {
+                choiceRow(title: "빌라 만들기", subtitle: "우리 빌라의 관리자가 되어 세대를 등록해요")
+            }
+            .buttonStyle(.plain)
             Spacer()
         }
         .padding(20)

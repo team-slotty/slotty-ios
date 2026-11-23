@@ -47,7 +47,12 @@ struct AdminHomeView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 NavigationLink("빌라 정보") {
-                    VillaSettingsView(repository: villaRepository, candidates: delegateCandidates, onAdminDelegated: onAdminDelegated)
+                    VillaSettingsView(
+                        repository: villaRepository,
+                        candidates: delegateCandidates,
+                        households: viewModel.households ?? [],
+                        onAdminDelegated: onAdminDelegated
+                    )
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {

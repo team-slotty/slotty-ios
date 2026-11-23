@@ -23,6 +23,8 @@ struct MainTabView: View {
     let historyRepository: any HistoryRepository
     /// 관리 탭의 세대 관리에 쓰는 저장소
     let adminRepository: any AdminRepository
+    /// 관리 탭의 빌라 정보에 쓰는 저장소
+    let villaRepository: any VillaRepository
     /// 빌라 관리자인지 - 관리자에게만 관리 탭을 보인다
     @State private var isAdmin = false
     
@@ -53,7 +55,10 @@ struct MainTabView: View {
             if isAdmin {
                 Tab("관리", systemImage: "gearshape") {
                     NavigationStack {
-                        AdminHomeView(viewModel: AdminHouseholdsViewModel(repository: adminRepository))
+                        AdminHomeView(viewModel: AdminHouseholdsViewModel(repository: adminRepository), villaRepository: villaRepository) {
+                            // 관리자를 넘기면 나는 더 이상 관리자가 아니다
+                            isAdmin = false
+                        }
                     }
                 }
             }
@@ -74,6 +79,7 @@ struct MainTabView: View {
         authRepository: MockAuthRepository(),
         accountRepository: MockAccountRepository(),
         historyRepository: MockHistoryRepository(),
-        adminRepository: MockAdminRepository()
+        adminRepository: MockAdminRepository(),
+        villaRepository: MockVillaRepository()
     )
 }

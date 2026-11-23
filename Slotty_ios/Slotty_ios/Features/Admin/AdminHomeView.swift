@@ -10,14 +10,25 @@ import SwiftUI
 /// 7-1 관리 홈 - 세대마다 초대 코드, 면, 차량, 세대원
 struct AdminHomeView: View {
     @State private var viewModel: AdminHouseholdsViewModel
+    /// 빌라 정보 화면에 넘겨줄 저장소
+    let villaRepository: any VillaRepository
+    /// 관리자를 넘겼을 때 - 관리 탭을 닫는다
+    let onAdminDelegated: () -> Void
     /// [+ 세대] 입력창을 띄웠는지
     @State private var isAdding = false
     @State private var newUnitNumber = ""
     /// 확인을 받는 중인 동작, 없으면 nil
     @State private var pending: PendingAction?
     
-    init(viewModel: AdminHouseholdsViewModel) {
+    init(viewModel: AdminHouseholdsViewModel, villaRepository: any VillaRepository, onAdminDelegated: @escaping () -> Void) {
         _viewModel = State(initialValue: viewModel)
+        self.villaRepository = villaRepository
+        self.onAdminDelegated = onAdminDelegated
+    }
+    
+    /// 관리자를 넘길 수 있는 입주민 - 모든 세대의 세대원 중 관리자 본인 제외
+    private var delegateCandidates: [AdminHousehold.Member] {
+        (viewModel.households ?? []).flatMap(\.members).filter { !$0.isAdmin }
     }
     
     var body: some View {
@@ -34,6 +45,11 @@ struct AdminHomeView: View {
         .navigationTitle("관리")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                NavigationLink("빌라 정보") {
+                    VillaSettingsView(repository: villaRepository, candidates: delegateCandidates, onAdminDelegated: onAdminDelegated)
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button("+ 세대") { isAdding = true }
             }
@@ -113,6 +129,6 @@ private struct PendingAction: Identifiable {
 
 #Preview {
     NavigationStack {
-        AdminHomeView(viewModel: AdminHouseholdsViewModel(repository: MockAdminRepository()))
+        AdminHomeView(viewModel: AdminHouseholdsViewModel(repository: MockAdminRepository()), villaRepository: MockVillaRepository()) {}
     }
 }

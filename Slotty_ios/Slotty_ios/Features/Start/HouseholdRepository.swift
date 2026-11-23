@@ -14,6 +14,9 @@ protocol HouseholdRepository {
     /// 초대 코드로 세대에 참여하고, 참여한 세대 호수를 돌려준다
     func join(inviteCode: String) async throws -> String
     
+    /// 우리 빌라 기준점 (위도, 경도) - 도착 알림에 쓴다, 없으면 nil
+    func fetchVillaAnchor() async throws -> (latitude: Double, longitude: Double)?
+    
     /// 빌라 만들기 - 만든 사람이 관리자가 되고 세대별 초대 코드를 돌려준다
     func createVilla(_ request: VillaCreateRequest) async throws -> VillaCreateResult
 }

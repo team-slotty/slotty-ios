@@ -31,6 +31,11 @@ final class MockHouseholdRepository: HouseholdRepository {
         return unit
     }
     
+    /// 시연 빌라(LG 가산 디지털센터)와 같은 기준점
+    func fetchVillaAnchor() async throws -> (latitude: Double, longitude: Double)? {
+        (37.4822875, 126.8792969)
+    }
+    
     func createVilla(_ request: VillaCreateRequest) async throws -> VillaCreateResult {
         myUnit = request.myUnitNumber
         let codes = request.households.map { VillaCreateResult.InviteCode(unitNumber: $0.unitNumber, code: "NEW\($0.unitNumber)CODE") }

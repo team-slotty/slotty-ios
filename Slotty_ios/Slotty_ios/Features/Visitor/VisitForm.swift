@@ -40,3 +40,13 @@ struct VisitForm: Equatable {
         return nil
     }
 }
+
+extension VisitForm {
+    /// 방문 수정 화면의 처음 값 - 지금 방문 그대로
+    init(visit: Visit) {
+        self.init(now: visit.startAt)
+        plateNumber = visit.plateNumber
+        endAt = visit.endAt
+        spotNumber = visit.spotNumber
+    }
+}

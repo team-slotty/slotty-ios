@@ -34,4 +34,15 @@ struct VisitDetailTests {
             _ = try await repository.update(visitID: visiting.id, plateNumber: "11가1111", startAt: visiting.startAt, endAt: visiting.endAt, spotNumber: nil)
         }
     }
+    
+    @Test func 수정하면_목록의_방문이_바뀐다() async throws {
+        let viewModel = VisitListViewModel(repository: MockVisitRepository())
+        await viewModel.load()
+        let scheduled = try #require(viewModel.visits?.first { $0.canDelete() })
+        var form = VisitForm(visit: scheduled)
+        form.plateNumber = "22나2222"
+        
+        #expect(await viewModel.update(scheduled, with: form))
+        #expect(viewModel.visits?.first { $0.id == scheduled.id }?.plateNumber == "22나2222")
+    }
 }

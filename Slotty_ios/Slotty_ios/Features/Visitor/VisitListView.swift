@@ -55,7 +55,10 @@ struct VisitListView: View {
                 visit: visit,
                 onEnd: { await viewModel.end(visit) },
                 onDelete: { await viewModel.delete(visit) },
-                failureMessage: viewModel.actionErrorMessage
+                failureMessage: viewModel.actionErrorMessage,
+                loadDetail: { await viewModel.detail(of: visit) },
+                onUpdate: { await viewModel.update(visit, with: $0) },
+                loadSpotOptions: { await viewModel.availableSpotNumbers(startAt: $0, endAt: $1) }
             )
             .presentationDetents([.medium])
         }

@@ -79,6 +79,31 @@ final class VisitListViewModel {
         }
     }
     
+    /// 방문 상세 - 등록한 사람과 연락처, 못 불러오면 nil
+    func detail(of visit: Visit) async -> VisitDetail? {
+        try? await repository.fetchDetail(visitID: visit.id)
+    }
+    
+    /// 시작 전 방문 수정 - 성공하면 목록의 방문을 바꾸고 true
+    func update(_ visit: Visit, with form: VisitForm) async -> Bool {
+        guard form.problem == nil else { return false }
+        do {
+            let updated = try await repository.update(
+                visitID: visit.id,
+                plateNumber: form.trimmedPlateNumber,
+                startAt: form.startAt,
+                endAt: form.endAt,
+                spotNumber: form.spotNumber
+            )
+            visits = visits?.map { $0.id == updated.id ? updated : $0 }
+            actionErrorMessage = nil
+            return true
+        } catch {
+            actionErrorMessage = (error as? APIError)?.serverMessage
+            return false
+        }
+    }
+    
     /// 그 시간에 지정할 수 있는 면 - 못 불러오면 빈 목록 (면 없이 등록은 가능)
     func availableSpotNumbers(startAt: Date, endAt: Date) async -> [Int] {
         (try? await repository.availableSpotNumbers(startAt: startAt, endAt: endAt)) ?? []

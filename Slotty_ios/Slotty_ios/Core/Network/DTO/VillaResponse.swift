@@ -17,6 +17,10 @@ struct AnchorResponse: Decodable {
 struct VillaResponse: Decodable {
     let name: String
     let address: String
+    /// LINE / DOUBLE / L_SHAPE
+    let layoutTemplate: String
+    /// TOP / BOTTOM / LEFT / RIGHT
+    let entranceSide: String
     let slotCount: Int
     let householdCount: Int
     /// 주소를 좌표로 바꾸지 못했으면 null
@@ -24,8 +28,8 @@ struct VillaResponse: Decodable {
     
     func toInfo() -> VillaInfo {
         VillaInfo(
-            name: name, address: address, slotCount: slotCount, householdCount: householdCount,
-            hasAnchor: anchor != nil
+            name: name, address: address, layoutTemplate: layoutTemplate, entranceSide: entranceSide,
+            slotCount: slotCount, householdCount: householdCount, hasAnchor: anchor != nil
         )
     }
 }
@@ -49,4 +53,32 @@ struct AnchorRequest: Encodable {
 /// 관리자 위임 요청 - PUT /api/villas/me/admin
 struct AdminDelegateRequest: Encodable {
     let userId: Int
+}
+
+/// 배치 변경 요청 - PUT /api/villas/me/layout (줄인 면에 기록이 있으면 SLOT_IN_USE)
+struct LayoutRequest: Encodable {
+    let layoutTemplate: String
+    let entranceSide: String
+    let slotCount: Int
+}
+
+/// 면 배정 요청 - PUT /api/parking-slots/assignments (세대 id가 없으면 공용)
+struct SlotAssignmentRequest: Encodable {
+    let assignments: [Assignment]
+    
+    struct Assignment: Encodable {
+        let slotId: Int
+        let householdId: Int?
+    }
+}
+
+/// 면 배정 화면에 쓰는 현황판 면 - GET /api/parking-board (면 이름과 배정 세대만)
+struct SlotListResponse: Decodable {
+    let slots: [Slot]
+    
+    struct Slot: Decodable {
+        let slotId: Int
+        let label: String
+        let assignedUnitNumber: String?
+    }
 }

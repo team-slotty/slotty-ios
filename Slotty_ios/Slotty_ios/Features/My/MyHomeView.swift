@@ -19,6 +19,8 @@ struct MyHomeView: View {
     let accountRepository: any AccountRepository
     /// 입출차 이력, 미확인 기록에 쓰는 저장소
     let historyRepository: any HistoryRepository
+    /// 가용시간에 쓰는 저장소
+    let availabilityRepository: any AvailabilityRepository
     
     var body: some View {
         Group {
@@ -109,7 +111,7 @@ struct MyHomeView: View {
     
     /// 하위 화면 메뉴 - 가용시간은 배정 면이 있는 세대만 보인다
     private func menu(_ board: ParkingBoard) -> some View {
-        let hasAssignedSpot = board.spots.contains { $0.isAssigned(to: board.myUnit) }
+        let mySpot = board.spots.first { $0.isAssigned(to: board.myUnit) }
         return VStack(spacing: 0) {
             menuRow("내 차량 관리") {
                 MyVehiclesView(viewModel: MyVehiclesViewModel(repository: vehicleRepository)) {
@@ -124,9 +126,11 @@ struct MyHomeView: View {
             menuRow("미확인 기록") {
                 UnidentifiedReportsView(viewModel: HistoryViewModel(repository: historyRepository))
             }
-            if hasAssignedSpot {
+            if let mySpot {
                 Divider()
-                menuRow("가용시간")
+                menuRow("가용시간") {
+                    AvailabilityView(viewModel: AvailabilityViewModel(repository: availabilityRepository, spotNumber: mySpot.number))
+                }
             }
             Divider()
             menuRow("설정") {
@@ -174,7 +178,7 @@ struct MyHomeView: View {
         MyHomeView(viewModel: viewModel,
                    vehicleRepository: MockVehicleRepository(),
                    authRepository: MockAuthRepository(),
-                   accountRepository: MockAccountRepository(), historyRepository: MockHistoryRepository())
+                   accountRepository: MockAccountRepository(), historyRepository: MockHistoryRepository(), availabilityRepository: MockAvailabilityRepository())
     }
     .task { await viewModel.load() }
 }

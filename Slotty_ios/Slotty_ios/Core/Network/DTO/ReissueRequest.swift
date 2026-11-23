@@ -11,3 +11,8 @@ import Foundation
 struct ReissueRequest: Encodable {
     let refreshToken: String
 }
+
+/// 로그아웃 요청 - POST /api/auth/logout (서버가 이 refresh 토큰을 끝낸다, 응답 204)
+struct LogoutRequest: Encodable {
+    let refreshToken: String
+}

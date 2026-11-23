@@ -17,4 +17,7 @@ protocol AuthRepository {
     
     /// 회원가입 - 이미 쓰는 아이디면 AuthError.loginIdDuplicated
     func signUp(_ form: SignUpForm) async throws
+    
+    /// 로그아웃 - 실패해도 이 기기에서는 로그아웃된 상태가 된다
+    func logout() async
 }

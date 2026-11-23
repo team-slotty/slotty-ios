@@ -29,4 +29,7 @@ final class MockAuthRepository: AuthRepository {
         }
         accounts[form.loginId] = form.password
     }
+    
+    /// 목 저장소는 로그인을 기억하지 않아서 할 일이 없다
+    func logout() async {}
 }

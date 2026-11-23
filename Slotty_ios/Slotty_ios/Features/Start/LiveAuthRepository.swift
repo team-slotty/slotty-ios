@@ -45,4 +45,13 @@ struct LiveAuthRepository: AuthRepository {
         }
         try tokenStore.save(AuthTokens(accessToken: response.accessToken, refreshToken: response.refreshToken))
     }
+    
+    /// 로그아웃 - 서버의 refresh 토큰을 끝내고 기기의 토큰을 지운다
+    /// 서버 요청이 실패해도(네트워크 오류 등) 기기의 토큰은 지운다 - 이 기기에서는 로그아웃돼야 하므로
+    func logout() async {
+        if let refreshToken = tokenStore.load()?.refreshToken {
+            try? await client.post("/api/auth/logout", body: LogoutRequest(refreshToken: refreshToken))
+        }
+        tokenStore.clear()
+    }
 }

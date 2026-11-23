@@ -31,11 +31,21 @@ struct APIClient {
     
     /// POST 요청으로 JSON을 보내고 응답 JSON을 원하는 타입으로 변환
     func post<Body: Encodable, Response: Decodable>(_ path: String, body: Body) async throws -> Response {
+        try await send(postRequest(path, body: body))
+    }
+    
+    /// POST 요청 - 성공 응답(204)에 본문이 없을 때
+    func post<Body: Encodable>(_ path: String, body: Body) async throws {
+        _ = try await data(for: postRequest(path, body: body))
+    }
+    
+    /// JSON 본문을 담은 POST 요청 만들기
+    private func postRequest<Body: Encodable>(_ path: String, body: Body) throws -> URLRequest {
         var request = URLRequest(url: baseURL.appending(path: path))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try encoder.encode(body)
-        return try await send(request)
+        return request
     }
     
     /// 요청을 보내고 200번대가 아니면 에러, 맞으면 응답 변환

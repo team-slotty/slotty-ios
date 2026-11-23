@@ -21,6 +21,10 @@ struct MainTabView: View {
     let accountRepository: any AccountRepository
     /// 마이 탭의 입출차 이력, 미확인 기록에 쓰는 저장소
     let historyRepository: any HistoryRepository
+    /// 관리 탭의 세대 관리에 쓰는 저장소
+    let adminRepository: any AdminRepository
+    /// 빌라 관리자인지 - 관리자에게만 관리 탭을 보인다
+    @State private var isAdmin = false
     
     var body: some View {
         TabView {
@@ -46,11 +50,18 @@ struct MainTabView: View {
                         accountRepository: accountRepository, historyRepository: historyRepository)
                 }
             }
-            Tab("관리", systemImage: "gearshape") {
-                placeholder("관리")
+            if isAdmin {
+                Tab("관리", systemImage: "gearshape") {
+                    NavigationStack {
+                        AdminHomeView(viewModel: AdminHouseholdsViewModel(repository: adminRepository))
+                    }
+                }
             }
         }
         .tint(SlottyColor.primary)
+        .task {
+            isAdmin = (try? await adminRepository.fetchIsAdmin()) ?? false
+        }
     }
     
     /// 아직 만들지 않은 탭 - 임시 화면 생성
@@ -69,6 +80,7 @@ struct MainTabView: View {
         vehicleRepository: MockVehicleRepository(),
         authRepository: MockAuthRepository(),
         accountRepository: MockAccountRepository(),
-        historyRepository: MockHistoryRepository()
+        historyRepository: MockHistoryRepository(),
+        adminRepository: MockAdminRepository()
     )
 }

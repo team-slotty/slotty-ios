@@ -44,7 +44,8 @@ struct VisitListView: View {
         .sheet(isPresented: $isRegistering) {
             VisitFormView(
                 loadSpotOptions: { await viewModel.availableSpotNumbers(startAt: $0, endAt: $1) },
-                loadFrequentPlates: { await viewModel.frequentPlateNumbers() }
+                loadFrequentPlates: { await viewModel.frequentPlateNumbers() },
+                failureMessage: viewModel.actionErrorMessage
             ) { form in
                 await viewModel.register(form)
             }
@@ -53,7 +54,8 @@ struct VisitListView: View {
             VisitDetailView(
                 visit: visit,
                 onEnd: { await viewModel.end(visit) },
-                onDelete: { await viewModel.delete(visit) }
+                onDelete: { await viewModel.delete(visit) },
+                failureMessage: viewModel.actionErrorMessage
             )
             .presentationDetents([.medium])
         }

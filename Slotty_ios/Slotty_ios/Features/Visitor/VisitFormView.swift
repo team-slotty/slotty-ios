@@ -13,6 +13,8 @@ struct VisitFormView: View {
     let loadSpotOptions: (Date, Date) async -> [Int]
     /// 자주 오는 차량번호 불러오기
     let loadFrequentPlates: () async -> [String]
+    /// 등록이 실패했을 때 보여 줄 서버 문구, 없으면 공통 문구
+    var failureMessage: String? = nil
     /// 등록 - 성공하면 true
     let onRegister: (VisitForm) async -> Bool
     
@@ -61,7 +63,7 @@ struct VisitFormView: View {
                     Text(problem)
                         .foregroundStyle(SlottyColor.secondary)
                 } else if failed {
-                    Text("방문을 등록하지 못했어요")
+                    Text(failureMessage ?? "방문을 등록하지 못했어요")
                         .foregroundStyle(SlottyColor.secondary)
                 }
             }

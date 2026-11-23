@@ -32,3 +32,11 @@ struct ParkingSpot: Identifiable, Equatable {
         assignedUnit == unit
     }
 }
+
+/// 면 상세에서 더 보여 주는 정보 - 서버 면 상세에서 받는다
+struct SpotDetail: Equatable {
+    /// 가용시간 (예: 종일, 09:00~18:00), 가용시간이 아니면 nil
+    let availableTime: String?
+    /// 지정된 방문 (예: 101호 방문 14:00~18:00), 없거나 볼 권한이 없으면 nil
+    let visit: String?
+}

@@ -16,6 +16,9 @@ struct ParkingActionErrorTests {
     private final class FailingParkingRepository: ParkingRepository {
         func fetchBoard() async throws -> ParkingBoard { throw ParkingError.notSupported }
         func checkInOptions() async throws -> CheckInOptions { throw ParkingError.notSupported }
+        func fetchSpotDetail(number: Int) async throws -> SpotDetail {
+            throw ParkingError.notSupported
+        }
         func enter(vehicle: Vehicle, spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }
         func exit(spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }
         func recordUnidentified(spotNumber: Int) async throws -> ParkingBoard { throw ParkingError.notSupported }

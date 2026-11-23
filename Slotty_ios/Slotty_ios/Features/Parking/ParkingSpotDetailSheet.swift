@@ -22,7 +22,10 @@ struct ParkingSpotDetailSheet: View {
     /// 내 면의 미확인 차량이 사실 우리 세대 차라고 정정할 수 있는지
     let canMarkAsMine: Bool
     let onMarkAsMine: () -> Void
+    /// 가용시간, 지정된 방문 불러오기
+    var loadDetail: () async -> SpotDetail? = { nil }
     
+    @State private var detail: SpotDetail?
     @State private var isConfirmingExit = false
     @State private var isConfirmingLeft = false
     
@@ -48,6 +51,12 @@ struct ParkingSpotDetailSheet: View {
                     infoRow("차량번호", record.maskedPlateNumber ?? "알 수 없음")
                     infoRow("입차 시각", record.enteredAt.formatted(date: .omitted, time: .shortened))
                     infoRow("기록 방식", record.method.label)
+                }
+                if let availableTime = detail?.availableTime {
+                    infoRow("가용시간", availableTime)
+                }
+                if let visit = detail?.visit {
+                    infoRow("방문", visit)
                 }
             }
             if canExit {
@@ -77,6 +86,9 @@ struct ParkingSpotDetailSheet: View {
             }
         }
         .padding(20)
+        .task {
+            detail = await loadDetail()
+        }
         .exitConfirmation("\(spot.number)번 면에서 출차할까요?", isPresented: $isConfirmingExit, onConfirm: onExit)
         .exitConfirmation("\(spot.number)번 면의 차가 떠났나요?", isPresented: $isConfirmingLeft, onConfirm: onMarkLeft)
     }

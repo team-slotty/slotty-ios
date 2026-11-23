@@ -17,6 +17,11 @@ final class MockParkingRepository: ParkingRepository {
         board
     }
     
+    /// 목 데이터에는 가용시간과 방문 지정이 없다
+    func fetchSpotDetail(number: Int) async throws -> SpotDetail {
+        SpotDetail(availableTime: nil, visit: nil)
+    }
+    
     /// 서버와 같은 규칙 - 빈 내 배정 면 -> 빈 공용 면, 찬 면과 남의 배정 면은 제외
     func checkInOptions() async throws -> CheckInOptions {
         let mySpots = board.spots.filter { $0.isAssigned(to: board.myUnit) }

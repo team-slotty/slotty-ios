@@ -115,7 +115,8 @@ struct ParkingHomeView: View {
                 canMarkAsMine: canMarkLeft(at: spot, in: board),
                 onMarkAsMine: {
                     markAsMine(spot, in: board)
-                }
+                },
+                loadDetail: { await viewModel.spotDetail(number: spot.number) }
             )
             .presentationDetents([.medium])
         }

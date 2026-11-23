@@ -60,6 +60,34 @@ struct APIClient {
         return request
     }
     
+    /// 서버 이벤트(SSE) 이름을 차례로 받는다 - 연결을 열어 둔 채 한 줄씩 읽는다
+    /// 서버가 닫거나 연결이 끊기면 끝난다 (다시 연결은 부르는 쪽에서)
+    func eventNames(_ path: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    var request = URLRequest(url: baseURL.appending(path: path))
+                    request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
+                    let (bytes, response) = try await session.bytes(for: authorized(request))
+                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+                    guard (200..<300).contains(statusCode) else {
+                        throw APIError.badStatus(statusCode)
+                    }
+                    var parser = ServerEventParser()
+                    for try await line in bytes.lines {
+                        if let name = parser.read(line) {
+                            continuation.yield(name)
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+    
     /// 요청을 보내고 200번대가 아니면 에러, 맞으면 응답 변환
     private func send<Response: Decodable>(_ request: URLRequest) async throws -> Response {
         let data = try await data(for: request)

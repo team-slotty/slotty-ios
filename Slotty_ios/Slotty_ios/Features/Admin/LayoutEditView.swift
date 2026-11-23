@@ -13,18 +13,18 @@ struct LayoutEditView: View {
     let villa: VillaInfo
     /// 바꾼 뒤 - 빌라 정보를 다시 불러온다
     let onChanged: () async -> Void
-
+    
     @Environment(\.dismiss) private var dismiss
     @State private var template: String
     @State private var entranceSide: String
     @State private var slotCount: Int
     @State private var isConfirming = false
     @State private var message: String?
-
+    
     /// 서버 값과 화면 이름
     static let templates = [("LINE", "일렬"), ("DOUBLE", "2열"), ("L_SHAPE", "ㄱ자")]
     static let entranceSides = [("TOP", "위"), ("BOTTOM", "아래"), ("LEFT", "왼쪽"), ("RIGHT", "오른쪽")]
-
+    
     init(repository: any VillaRepository, villa: VillaInfo, onChanged: @escaping () async -> Void) {
         self.repository = repository
         self.villa = villa
@@ -33,7 +33,7 @@ struct LayoutEditView: View {
         _entranceSide = State(initialValue: villa.entranceSide)
         _slotCount = State(initialValue: villa.slotCount)
     }
-
+    
     var body: some View {
         Form {
             Section {
@@ -47,6 +47,14 @@ struct LayoutEditView: View {
                 Stepper("면 수 \(slotCount)면", value: $slotCount, in: 1...30)
             } footer: {
                 Text("남은 면의 배정은 그대로, 늘린 면은 공용으로 추가돼요. 줄일 때 기록이 남은 면은 지울 수 없어요.")
+            }
+            Section {
+                // 고르는 값이 바뀌면 오른쪽 그림이 바로 바뀐다 (서버와 같은 계산)
+                HStack(spacing: 12) {
+                    LayoutPreview(title: "지금", template: villa.layoutTemplate, entranceSide: villa.entranceSide, slotCount: villa.slotCount)
+                    LayoutPreview(title: "바뀔 배치", template: template, entranceSide: entranceSide, slotCount: slotCount)
+                }
+                .padding(.vertical, 4)
             }
             if let message {
                 Text(message)
@@ -68,7 +76,7 @@ struct LayoutEditView: View {
             Text("모든 입주민의 현황판 모양이 바뀌어요")
         }
     }
-
+    
     private func change() async {
         do {
             try await repository.changeLayout(template: template, entranceSide: entranceSide, slotCount: slotCount)
@@ -85,13 +93,13 @@ struct SlotAssignmentView: View {
     let repository: any VillaRepository
     /// 고를 수 있는 세대
     let households: [AdminHousehold]
-
+    
     @Environment(\.dismiss) private var dismiss
     @State private var slots: [AdminSlot] = []
     /// 면 id -> 고른 세대 id (nil이면 공용)
     @State private var selection: [Int: Int?] = [:]
     @State private var message: String?
-
+    
     var body: some View {
         Form {
             if let message {
@@ -120,7 +128,7 @@ struct SlotAssignmentView: View {
         }
         .task { await load() }
     }
-
+    
     /// 면 하나의 고른 세대 - 처음에는 지금 배정된 세대
     private func binding(for slot: AdminSlot) -> Binding<Int?> {
         Binding(
@@ -128,7 +136,7 @@ struct SlotAssignmentView: View {
             set: { selection[slot.id] = $0 }
         )
     }
-
+    
     /// 면 목록을 받고, 배정된 호수로 세대 id를 찾아 처음 값으로
     private func load() async {
         do {
@@ -140,7 +148,7 @@ struct SlotAssignmentView: View {
             message = (error as? APIError)?.serverMessage ?? "면 목록을 불러오지 못했어요"
         }
     }
-
+    
     private func save() async {
         do {
             try await repository.assign(selection)

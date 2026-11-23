@@ -23,10 +23,13 @@ struct APIClient {
         decoder.dateDecodingStrategy = .custom(Self.decodeServerDate)
     }
     
-    /// GET 요청을 보내고 응답 JSON을 원하는 타입으로 변환
-    func get<Response: Decodable>(_ path: String) async throws -> Response {
-        let request = URLRequest(url: baseURL.appending(path: path))
-        return try await send(request)
+    /// GET 요청을 보내고 응답 JSON을 원하는 타입으로 변환 - query는 주소 뒤 ?이름=값으로 붙는다
+    func get<Response: Decodable>(_ path: String, query: [URLQueryItem] = []) async throws -> Response {
+        var url = baseURL.appending(path: path)
+        if !query.isEmpty {
+            url.append(queryItems: query)
+        }
+        return try await send(URLRequest(url: url))
     }
     
     /// POST 요청으로 JSON을 보내고 응답 JSON을 원하는 타입으로 변환

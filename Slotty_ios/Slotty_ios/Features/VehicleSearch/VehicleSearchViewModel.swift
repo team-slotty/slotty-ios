@@ -47,7 +47,8 @@ final class VehicleSearchViewModel {
         } catch VehicleSearchError.limitExceeded {
             errorMessage = "오늘 검색 횟수를 모두 사용했어요"
         } catch {
-            errorMessage = "검색하지 못했어요"
+            // 서버가 보낸 문구 (예: 오늘 검색 횟수 20회를 모두 사용)
+            errorMessage = (error as? APIError)?.serverMessage ?? "검색하지 못했어요"
         }
     }
 }

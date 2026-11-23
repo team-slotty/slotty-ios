@@ -22,8 +22,8 @@ struct VehicleSearchResult: Identifiable, Equatable {
     enum Kind: Equatable {
         /// 입주민 차
         case resident
-        /// 방문 차 - 방문 시간대
-        case visitor(start: Date, end: Date)
+        /// 방문 차 - 방문 시간대, 볼 권한이 없으면 nil (관리자/면 주인/방문 세대만 보인다)
+        case visitor(start: Date?, end: Date?)
     }
 }
 

@@ -17,9 +17,14 @@ struct LiveParkingRepository: ParkingRepository {
     
     /// 현황판과 내 차량을 차례로 불러와 합친다
     func fetchBoard() async throws -> ParkingBoard {
-        let board: BoardResponse = try await client.get("/api/board")
+        let board: ParkingBoardResponse = try await client.get("/api/parking-board")
         let myVehicles: MyVehiclesResponse = try await client.get("/api/vehicles/me")
-        return board.toBoard(myUnit: myVehicles.unitNumber, myVehicles: myVehicles.toVehicles())
+        let me: MeResponse = try await client.get("/api/me")
+        return board.toBoard(
+            villaName: me.villa?.name ?? "",
+            myUnit: myVehicles.unitNumber,
+            myVehicles: myVehicles.toVehicles()
+        )
     }
     
     func checkInOptions() async throws -> CheckInOptions {

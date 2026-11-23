@@ -17,6 +17,8 @@ struct ParkingSpot: Identifiable, Equatable {
     var status: ParkingSpotStatus
     /// 지금 서 있는 차의 기록, 비어 있으면 nil
     var currentParking: ParkingRecord?
+    /// 서버의 미확인 기록 id - 미확인 면이 아니거나 목 데이터면 nil
+    var unidentifiedReportId: Int? = nil
     
     var id: Int { number }
     

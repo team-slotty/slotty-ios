@@ -21,6 +21,8 @@ struct MainTabView: View {
     let accountRepository: any AccountRepository
     /// 마이 탭의 입출차 이력, 미확인 기록에 쓰는 저장소
     let historyRepository: any HistoryRepository
+    /// 마이 탭의 가용시간에 쓰는 저장소
+    let availabilityRepository: any AvailabilityRepository
     /// 관리 탭의 세대 관리에 쓰는 저장소
     let adminRepository: any AdminRepository
     /// 관리 탭의 빌라 정보에 쓰는 저장소
@@ -49,7 +51,7 @@ struct MainTabView: View {
                     MyHomeView(
                         viewModel: parkingViewModel,
                         vehicleRepository: vehicleRepository, authRepository: authRepository,
-                        accountRepository: accountRepository, historyRepository: historyRepository)
+                        accountRepository: accountRepository, historyRepository: historyRepository, availabilityRepository: availabilityRepository)
                 }
             }
             if isAdmin {
@@ -79,6 +81,7 @@ struct MainTabView: View {
         authRepository: MockAuthRepository(),
         accountRepository: MockAccountRepository(),
         historyRepository: MockHistoryRepository(),
+        availabilityRepository: MockAvailabilityRepository(),
         adminRepository: MockAdminRepository(),
         villaRepository: MockVillaRepository()
     )

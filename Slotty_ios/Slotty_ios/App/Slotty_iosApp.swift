@@ -65,7 +65,8 @@ struct Slotty_iosApp: App {
                 searchRepository: Self.vehicleSearchRepository,
                 visitViewModel: visitViewModel,
                 vehicleRepository: Self.vehicleRepository,
-                authRepository: Self.authRepository
+                authRepository: Self.authRepository,
+                accountRepository: Self.accountRepository
             )
         }
     }
@@ -132,5 +133,15 @@ struct Slotty_iosApp: App {
         }
 #endif
         return LiveVisitRepository()
+    }
+    
+    /// 실행 인자에 -useMockData가 있으면 목 저장소, 없으면 서버 저장소 (Debug 빌드에서만)
+    private static var accountRepository: any AccountRepository {
+#if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-useMockData") {
+            return MockAccountRepository()
+        }
+#endif
+        return LiveAccountRepository()
     }
 }

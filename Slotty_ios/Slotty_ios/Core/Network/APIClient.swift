@@ -66,6 +66,13 @@ struct APIClient {
         return try decoder.decode(Response.self, from: data)
     }
     
+    /// PATCH 요청 - 보낸 필드만 바꾸고, 바뀐 결과를 응답 JSON으로 받는다
+    func patch<Body: Encodable, Response: Decodable>(_ path: String, body: Body) async throws -> Response {
+        var request = try postRequest(path, body: body)
+        request.httpMethod = "PATCH"
+        return try await send(request)
+    }
+    
     /// DELETE 요청 - 성공 응답(204)에 본문이 없어서 돌려주는 값이 없다
     func delete(_ path: String) async throws {
         var request = URLRequest(url: baseURL.appending(path: path))

@@ -73,6 +73,20 @@ struct APIClient {
         return try await send(request)
     }
     
+    /// PUT 요청 - 통째로 바꾸고, 바뀐 결과를 응답 JSON으로 받는다
+    func put<Body: Encodable, Response: Decodable>(_ path: String, body: Body) async throws -> Response {
+        var request = try postRequest(path, body: body)
+        request.httpMethod = "PUT"
+        return try await send(request)
+    }
+    
+    /// PUT 요청 - 성공 응답(204)에 본문이 없을 때
+    func put<Body: Encodable>(_ path: String, body: Body) async throws {
+        var request = try postRequest(path, body: body)
+        request.httpMethod = "PUT"
+        _ = try await data(for: request)
+    }
+    
     /// DELETE 요청 - 성공 응답(204)에 본문이 없어서 돌려주는 값이 없다
     func delete(_ path: String) async throws {
         var request = URLRequest(url: baseURL.appending(path: path))

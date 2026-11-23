@@ -27,6 +27,11 @@ struct LiveHouseholdRepository: HouseholdRepository {
         return response.household.unitNumber
     }
     
+    func fetchVillaAnchor() async throws -> (latitude: Double, longitude: Double)? {
+        let response: MeResponse = try await client.get("/api/me")
+        return response.villa?.anchor.map { ($0.latitude, $0.longitude) }
+    }
+    
     func createVilla(_ request: VillaCreateRequest) async throws -> VillaCreateResult {
         let response: VillaCreateResponse = try await client.post("/api/villas", body: request)
         return response.toResult()

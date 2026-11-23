@@ -25,6 +25,8 @@ struct MeResponse: Decodable {
     
     struct Villa: Decodable {
         let name: String
+        /// 도착 알림 기준점 - 주소를 좌표로 못 바꿨으면 null
+        let anchor: AnchorResponse?
     }
 }
 

@@ -91,12 +91,16 @@ struct MyHomeView: View {
                         .strokeBorder(SlottyColor.line)
                 }
             }
-            NavigationLink("+ 차량 등록") {
+            NavigationLink {
                 VehicleRegisterView(viewModel: VehicleRegisterViewModel(repository: vehicleRepository)) {
                     // 등록한 차가 홈과 마이의 내 차량에 바로 보이도록
                     await viewModel.load()
                 }
+            } label: {
+                Label("차량 등록", systemImage: "plus")
             }
+            // 다른 보조 버튼(출차 등)과 같은 모양 - 가로 전체, 흰 배경 + 회색 테두리
+            .buttonStyle(.slottySecondary)
             .font(SlottyFont.body)
             .foregroundStyle(SlottyColor.primary)
         }

@@ -51,6 +51,10 @@ struct ParkingHomeView: View {
         .task {
             await reload()
         }
+        .task {
+            // 다른 세대가 입출차하면 서버가 알려 줘서 바로 다시 불러온다
+            await viewModel.watchBoardChanges()
+        }
         .alert(viewModel.errorMessage ?? "", isPresented: isShowingActionError) {
             Button("확인", role: .cancel) {}
         }

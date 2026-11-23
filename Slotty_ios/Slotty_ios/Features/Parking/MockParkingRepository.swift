@@ -13,6 +13,11 @@ import Foundation
 final class MockParkingRepository: ParkingRepository {
     private var board = MockParkingData.board
     
+    /// 목 데이터는 다른 사람이 바꾸지 않아서 알림이 없다
+    func boardChanges() -> AsyncStream<Void> {
+        AsyncStream { $0.finish() }
+    }
+    
     func fetchBoard() async throws -> ParkingBoard {
         board
     }

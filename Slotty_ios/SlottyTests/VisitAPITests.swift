@@ -48,4 +48,19 @@ struct VisitAPITests {
         
         #expect(json.contains("2026-11-23T14:00:00+09:00"))
     }
+    
+    @Test func 지정_가능_면은_시각의_더하기를_인코딩해서_묻는다() async throws {
+        StubURLProtocol.handlers[host] = { request in
+            // +09:00의 +가 %2B로 가야 서버가 공백으로 읽지 않는다
+            let query = request.url?.query ?? ""
+            guard query.contains("startAt=2026-11-23T14:00:00%2B09:00") else { return (400, "") }
+            return (200, #"[{ "slotId": 6, "label": "6번", "type": "COMMON", "assignedUnitNumber": null, "allDay": true, "window": null }]"#)
+        }
+        let client = APIClient(baseURL: URL(string: "http://\(host)")!, session: StubURLProtocol.makeSession(), tokenStore: InMemoryTokenStore())
+        let startAt = try #require(ISO8601DateFormatter().date(from: "2026-11-23T05:00:00Z"))
+        
+        let spots = try await LiveVisitRepository(client: client).availableSpotNumbers(startAt: startAt, endAt: startAt.addingTimeInterval(3600))
+        
+        #expect(spots == [6])
+    }
 }

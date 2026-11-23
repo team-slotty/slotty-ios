@@ -26,9 +26,17 @@ struct APIClient {
     
     /// GET 요청을 보내고 응답 JSON을 원하는 타입으로 변환 - query는 주소 뒤 ?이름=값으로 붙는다
     func get<Response: Decodable>(_ path: String, query: [URLQueryItem] = []) async throws -> Response {
-        var url = baseURL.appending(path: path)
+        guard var components = URLComponents(url: baseURL.appending(path: path), resolvingAgainstBaseURL: false) else {
+            throw URLError(.badURL)
+        }
         if !query.isEmpty {
-            url.append(queryItems: query)
+            components.queryItems = query
+            // +는 주소에서 공백으로 읽혀서 %2B로 바꾼다 (예: 시각의 +09:00)
+            let encoded = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+            components.percentEncodedQuery = encoded
+        }
+        guard let url = components.url else {
+            throw URLError(.badURL)
         }
         return try await send(URLRequest(url: url))
     }
@@ -130,10 +138,15 @@ struct APIClient {
     
     /// 서버로 보내는 날짜 - 한국 시각에 +09:00을 붙인다 (예: 2026-11-23T14:00:00+09:00)
     nonisolated static func encodeServerDate(_ date: Date, _ encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(serverDateString(date))
+    }
+    
+    /// 날짜를 서버 형식 글자로 - 본문과 주소(query)에 같이 쓴다
+    nonisolated static func serverDateString(_ date: Date) -> String {
         let formatter = ISO8601DateFormatter()
         formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
-        var container = encoder.singleValueContainer()
-        try container.encode(formatter.string(from: date))
+        return formatter.string(from: date)
     }
     
     /// 서버 날짜 해석

@@ -50,4 +50,13 @@ final class MockVisitRepository: VisitRepository {
         }
         visits.remove(at: index)
     }
+    
+    /// 목 현황판의 공용 면
+    func availableSpotNumbers(startAt: Date, endAt: Date) async throws -> [Int] {
+        [6, 7]
+    }
+    
+    func frequentPlateNumbers() async throws -> [String] {
+        ["78마3456", "56바7890"]
+    }
 }

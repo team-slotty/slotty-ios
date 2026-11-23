@@ -17,4 +17,8 @@ protocol VisitRepository {
     func end(visitID: String) async throws -> Visit
     /// 삭제: 시작 전 방문만 지울 수 있다
     func delete(visitID: String) async throws
+    /// 그 시간에 방문차량을 세울 수 있는 면 번호 (공용 면, 가용시간이 겹치는 면)
+    func availableSpotNumbers(startAt: Date, endAt: Date) async throws -> [Int]
+    /// 우리 세대에 자주 오는 방문 차량번호 - 최근 순
+    func frequentPlateNumbers() async throws -> [String]
 }

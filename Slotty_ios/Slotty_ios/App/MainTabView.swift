@@ -19,6 +19,8 @@ struct MainTabView: View {
     let authRepository: any AuthRepository
     /// 마이 탭 설정의 연락처 공개, 탈퇴에 쓰는 저장소
     let accountRepository: any AccountRepository
+    /// 마이 탭의 입출차 이력, 미확인 기록에 쓰는 저장소
+    let historyRepository: any HistoryRepository
     
     var body: some View {
         TabView {
@@ -41,7 +43,7 @@ struct MainTabView: View {
                     MyHomeView(
                         viewModel: parkingViewModel,
                         vehicleRepository: vehicleRepository, authRepository: authRepository,
-                        accountRepository: accountRepository)
+                        accountRepository: accountRepository, historyRepository: historyRepository)
                 }
             }
             Tab("관리", systemImage: "gearshape") {
@@ -66,6 +68,7 @@ struct MainTabView: View {
         visitViewModel: VisitListViewModel(repository: MockVisitRepository()),
         vehicleRepository: MockVehicleRepository(),
         authRepository: MockAuthRepository(),
-        accountRepository: MockAccountRepository()
+        accountRepository: MockAccountRepository(),
+        historyRepository: MockHistoryRepository()
     )
 }

@@ -17,6 +17,8 @@ struct MyHomeView: View {
     let authRepository: any AuthRepository
     /// 설정의 연락처 공개, 탈퇴에 쓰는 저장소
     let accountRepository: any AccountRepository
+    /// 입출차 이력, 미확인 기록에 쓰는 저장소
+    let historyRepository: any HistoryRepository
     
     var body: some View {
         Group {
@@ -114,6 +116,14 @@ struct MyHomeView: View {
                     await viewModel.load()
                 }
             }
+            Divider()
+            menuRow("입출차 이력") {
+                ParkingHistoryView(viewModel: HistoryViewModel(repository: historyRepository))
+            }
+            Divider()
+            menuRow("미확인 기록") {
+                UnidentifiedReportsView(viewModel: HistoryViewModel(repository: historyRepository))
+            }
             if hasAssignedSpot {
                 Divider()
                 menuRow("가용시간")
@@ -164,7 +174,7 @@ struct MyHomeView: View {
         MyHomeView(viewModel: viewModel,
                    vehicleRepository: MockVehicleRepository(),
                    authRepository: MockAuthRepository(),
-                   accountRepository: MockAccountRepository())
+                   accountRepository: MockAccountRepository(), historyRepository: MockHistoryRepository())
     }
     .task { await viewModel.load() }
 }

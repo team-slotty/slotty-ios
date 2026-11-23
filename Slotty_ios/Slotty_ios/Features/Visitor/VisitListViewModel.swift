@@ -70,6 +70,16 @@ final class VisitListViewModel {
         }
     }
     
+    /// 그 시간에 지정할 수 있는 면 - 못 불러오면 빈 목록 (면 없이 등록은 가능)
+    func availableSpotNumbers(startAt: Date, endAt: Date) async -> [Int] {
+        (try? await repository.availableSpotNumbers(startAt: startAt, endAt: endAt)) ?? []
+    }
+    
+    /// 자주 오는 차량번호 - 못 불러오면 빈 목록
+    func frequentPlateNumbers() async -> [String] {
+        (try? await repository.frequentPlateNumbers()) ?? []
+    }
+    
     /// 홈 "오늘 방문 예정" - 빠른 순
     func todayVisits(now: Date = Date()) -> [Visit] {
         (visits ?? [])

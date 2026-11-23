@@ -14,12 +14,9 @@ struct VisitListView: View {
     @State private var isRegistering = false
     /// 상세 시트로 보고 있는 방문, 닫혀 있으면 nil
     @State private var selectedVisit: Visit?
-    /// 방문 등록에서 지정할 수 있는 면 번호
-    private let spotOptions: [Int]
     
-    init(viewModel: VisitListViewModel, spotOptions: [Int]) {
+    init(viewModel: VisitListViewModel) {
         _viewModel = State(initialValue: viewModel)
-        self.spotOptions = spotOptions
     }
     
     var body: some View {
@@ -45,7 +42,10 @@ struct VisitListView: View {
             }
         }
         .sheet(isPresented: $isRegistering) {
-            VisitFormView(spotOptions: spotOptions) { form in
+            VisitFormView(
+                loadSpotOptions: { await viewModel.availableSpotNumbers(startAt: $0, endAt: $1) },
+                loadFrequentPlates: { await viewModel.frequentPlateNumbers() }
+            ) { form in
                 await viewModel.register(form)
             }
         }
@@ -98,6 +98,6 @@ struct VisitListView: View {
 
 #Preview {
     NavigationStack {
-        VisitListView(viewModel: VisitListViewModel(repository: MockVisitRepository()), spotOptions: [6, 7])
+        VisitListView(viewModel: VisitListViewModel(repository: MockVisitRepository()))
     }
 }
